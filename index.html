@@ -21,7 +21,7 @@
     .radio-group {
       display: flex;
       flex-wrap: wrap;
-      gap: 0.5rem;
+      gap: 1rem; /* More spacing between options */
       margin-bottom: 1rem;
     }
     .radio-option {
@@ -62,6 +62,11 @@
       <input type="text" id="jerseyNumber" pattern="^\d{1,2}$" required />
     </label>
 
+    <label>
+      Jersey Number (00–99):
+      <input type="text" id="jerseyNumberConfirm" pattern="^\d{1,2}$" required />
+    </label>
+
     <label>Jersey Size:</label>
     <div class="radio-group" id="sizeOptions">
       <label class="radio-option"><input type="radio" name="shirtSize" value="3XS" required /> 3XS</label>
@@ -86,7 +91,6 @@
         <th>Size</th>
         <th>Jersey #</th>
         <th>Remarks</th>
-        <th>Submitted At</th>
       </tr>
     </thead>
     <tbody>
@@ -119,10 +123,16 @@
 
       const name = document.getElementById('playerName').value.trim();
       const number = document.getElementById('jerseyNumber').value.trim();
+      const numberConfirm = document.getElementById('jerseyNumberConfirm').value.trim();
       const size = document.querySelector('input[name="shirtSize"]:checked')?.value;
 
       if (!name || !/^\d{1,2}$/.test(number) || !size) {
         alert("Please fill all fields with valid input.");
+        return;
+      }
+
+      if (number !== numberConfirm) {
+        alert("Jersey numbers do not match.");
         return;
       }
 
@@ -182,17 +192,6 @@
           remarksCell.textContent = "";
         }
         row.appendChild(remarksCell);
-
-        const timeCell = document.createElement('td');
-        const date = new Date(entry.timestamp || Date.now());
-        let hours = date.getHours();
-        const minutes = date.getMinutes().toString().padStart(2, '0');
-        const ampm = hours >= 12 ? 'pm' : 'am';
-        hours = hours % 12 || 12;
-        const timeFormatted = `${hours}:${minutes}${ampm}`;
-        const dateFormatted = `${date.getDate()}/${date.getMonth() + 1}`;
-        timeCell.textContent = `${dateFormatted} ${timeFormatted}`;
-        row.appendChild(timeCell);
 
         tableBody.appendChild(row);
       }
