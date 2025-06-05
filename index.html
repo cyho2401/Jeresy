@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Jersey Selector</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 1rem;
+      max-width: 600px;
+      margin: auto;
+    }
+    input, select, button {
+      padding: 0.5rem;
+      margin: 0.5rem 0;
+      width: 100%;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+    }
+    th, td {
+      padding: 0.5rem;
+      border: 1px solid #ccc;
+      text-align: center;
+    }
+    .duplicate {
+      color: red;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>🏀 Jersey Number & T-Shirt Size</h2>
+
+  <form id="jerseyForm">
+    <label>
+      Name:
+      <input type="text" id="playerName" required />
+    </label>
+
+    <label>
+      Jersey Number (00–99):
+      <input type="number" id="jerseyNumber" min="0" max="99" required />
+    </label>
+
+    <label>
+      T-Shirt Size:
+      <select id="shirtSize" required>
+        <option value="">Select size</option>
+        <option value="S">S</option>
+        <option value="M">M</option>
+        <option value="L">L</option>
+        <option value="XL">XL</option>
+        <option value="XXL">XXL</option>
+      </select>
+    </label>
+
+    <button type="submit">Submit</button>
+  </form>
+
+  <h3>📋 Current Selections</h3>
+  <table id="selectionTable">
+    <thead>
+      <tr>
+        <th>Player</th>
+        <th>Jersey #</th>
+        <th>Size</th>
+        <th>Submitted At</th>
+        <th>Remarks</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Filled by JS -->
+    </tbody>
+  </table>
+
+  <!-- ✅ Firebase SDK -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCGCaWivohAhxZDkKp7YGNp9deNetR3K4Y",
+      authDomain: "jersey-app-bcefa.firebaseapp.com",
+      databaseURL: "https://jersey-app-bcefa-default-rtdb.firebaseio.com",
+      projectId: "jersey-app-bcefa",
+      storageBucket: "jersey-app-bcefa.firebasestorage.app",
+      messagingSenderId: "778327507472",
+      appId: "1:778327507472:web:057e3db1b767f0b137c095"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    const form = document.getElementById('jerseyForm');
+    const tableBody = document.querySelector('#selectionTable tbody');
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      const name = document.getElementById('playerName').value.trim();
+      const number = document.getElementById('jerseyNumber').value.padStart(2, '0');
+      const size = document.getElementById('shirtSize').value;
+
+      if (!name || isNaN(number) || !size) {
+        alert("Please fill all fields.");
+        return;
+      }
+
+      const entry = {
+        name,
+        jerseyNumber: number,
+        size,
+        timestamp: Date.now()
+      };
+
+      push(ref(db, 'jerseys'), entry).catch((err) => {
+        alert("❌ Failed to save. Try again.");
+        console.error(err);
+      });
+
+      form.reset();
+    });
+
+    onValue(ref(db, 'jerseys'), (snapshot) => {
+      const data = snapshot.val();
+      tableBody.innerHTML = '';
+
+      if (!data) return;
+
+      // ✅ Create array of entries
+      const entries = Object.entries(data);
+
+      // ✅ Count duplicates
+      const countMap = {};
+      for (const [id, entry] of entries) {
+        const num = entry.jerseyNumber;
+        countMap[num] = (countMap[num] || 0) + 1;
+      }
+
+      // ✅ Sort by jersey number
+      entries.sort((a, b) => {
+        const numA = parseInt(a[1].jerseyNumber);
+        const numB = parseInt(b[1].jerseyNumber);
+        return numA - numB;
+      });
+
+      for (const [id, entry] of entries) {
+        const row = document.createElement('tr');
+
+        const nameCell = document.createElement('td');
+        nameCell.textContent = entry.name;
+        row.appendChild(nameCell);
+
+        const numberCell = document.createElement('td');
+        numberCell.textContent = entry.jerseyNumber;
+        row.appendChild(numberCell);
+
+        const sizeCell = document.createElement('td');
+        sizeCell.textContent = entry.size;
+        row.appendChild(sizeCell);
+
+        const timeCell = document.createElement('td');
+        const date = new Date(entry.timestamp || Date.now());
+        timeCell.textContent = date.toLocaleString();
+        row.appendChild(timeCell);
+
+        const remarksCell = document.createElement('td');
+        if (countMap[entry.jerseyNumber] > 1) {
+          remarksCell.textContent = "⚠️ Duplicated";
+          remarksCell.classList.add('duplicate');
+        } else {
+          remarksCell.textContent = "";
+        }
+        row.appendChild(remarksCell);
+
+        tableBody.appendChild(row);
+      }
+    });
+  </script>
+</body>
+</html>

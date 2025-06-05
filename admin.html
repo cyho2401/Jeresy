@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin - Jersey Management</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      max-width: 600px;
+      margin: auto;
+      padding: 2rem;
+    }
+    input, button {
+      margin: 0.25rem 0;
+      padding: 0.5rem;
+      width: 100%;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+    }
+    th, td {
+      padding: 0.5rem;
+      border: 1px solid #ccc;
+      text-align: center;
+    }
+    td[contenteditable] {
+      background-color: #fef9e7;
+      outline: 1px dashed #ccc;
+    }
+  </style>
+  <meta name="robots" content="noindex, nofollow">
+</head>
+<body>
+
+  <h2>🔒 Admin Login</h2>
+  <div id="loginSection">
+    <input type="password" id="adminPass" placeholder="Enter admin password" />
+    <button onclick="checkPassword()">Login</button>
+  </div>
+
+  <div id="adminPanel" style="display:none;">
+    <h2>📋 Manage Jersey Entries</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Jersey #</th>
+          <th>Size</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="adminTable"></tbody>
+    </table>
+  </div>
+
+  <!-- Firebase SDK -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getDatabase, ref, onValue, remove, update } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+    // ✅ Replace with your actual Firebase config
+    const firebaseConfig = {
+      apiKey: "AIzaSyCGCaWivohAhxZDkKp7YGNp9deNetR3K4Y",
+      authDomain: "jersey-app-bcefa.firebaseapp.com",
+      databaseURL: "https://jersey-app-bcefa-default-rtdb.firebaseio.com",
+      projectId: "jersey-app-bcefa",
+      storageBucket: "jersey-app-bcefa.firebasestorage.app",
+      messagingSenderId: "778327507472",
+      appId: "1:778327507472:web:057e3db1b767f0b137c095"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const dbRef = ref(db, 'jerseys');
+
+    const adminTable = document.getElementById('adminTable');
+
+    // ✅ Make checkPassword globally accessible
+    window.checkPassword = function () {
+      const pass = document.getElementById('adminPass').value;
+      if (pass === "admin123") {
+        document.getElementById('loginSection').style.display = "none";
+        document.getElementById('adminPanel').style.display = "block";
+        loadEntries();
+      } else {
+        alert("Wrong password!");
+      }
+    }
+
+    function loadEntries() {
+      onValue(dbRef, (snapshot) => {
+        const data = snapshot.val();
+        adminTable.innerHTML = '';
+        for (const id in data) {
+          const entry = data[id];
+          const row = document.createElement('tr');
+
+          // Name cell
+          const nameTd = document.createElement('td');
+          nameTd.contentEditable = true;
+          nameTd.textContent = entry.name;
+          nameTd.oninput = () => markEdited(nameTd, id, 'name');
+          row.appendChild(nameTd);
+
+          // Jersey #
+          const numberTd = document.createElement('td');
+          numberTd.contentEditable = true;
+          numberTd.textContent = entry.jerseyNumber;
+          numberTd.oninput = () => markEdited(numberTd, id, 'jerseyNumber');
+          row.appendChild(numberTd);
+
+          // Size
+          const sizeTd = document.createElement('td');
+          sizeTd.contentEditable = true;
+          sizeTd.textContent = entry.size;
+          sizeTd.oninput = () => markEdited(sizeTd, id, 'size');
+          row.appendChild(sizeTd);
+
+          // Delete button
+          const actionTd = document.createElement('td');
+          const deleteBtn = document.createElement('button');
+          deleteBtn.textContent = "Delete";
+          deleteBtn.onclick = () => deleteEntry(id);
+          actionTd.appendChild(deleteBtn);
+          row.appendChild(actionTd);
+
+          adminTable.appendChild(row);
+        }
+      });
+    }
+
+    // ✅ Make markEdited globally accessible
+    window.markEdited = function (cell, id, field) {
+      const value = cell.textContent.trim();
+      update(ref(db, `jerseys/${id}`), {
+        [field]: value
+      }).then(() => {
+        console.log(`✅ Saved: ${field} → ${value}`);
+      }).catch((err) => {
+        console.error("❌ Failed to save:", err);
+        alert("Failed to save. Please try again.");
+      });
+    }
+
+    function deleteEntry(id) {
+      if (confirm("Are you sure you want to delete this entry?")) {
+        remove(ref(db, `jerseys/${id}`))
+          .then(() => console.log("✅ Entry deleted"))
+          .catch((err) => {
+            console.error("❌ Failed to delete:", err);
+            alert("Failed to delete. Please try again.");
+          });
+      }
+    }
+  </script>
+</body>
+</html>
