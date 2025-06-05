@@ -28,19 +28,18 @@
       cursor: pointer;
     }
 
-    .radio-group {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.75rem 1.5rem;
-      margin-bottom: 2rem;
-    }
+.radio-group {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+  gap: 0.75rem 1rem;
+  margin-bottom: 2rem;
+}
 
-    .radio-option {
-      min-width: 60px;
-      display: flex;
-      align-items: center;
-      gap: 0.25rem;
-    }
+.radio-option {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
 
     table {
       width: 100%;
