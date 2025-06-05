@@ -11,41 +11,48 @@
       max-width: 600px;
       margin: auto;
     }
+
     form {
       display: flex;
       flex-direction: column;
       gap: 1rem;
     }
+
     input, button {
       padding: 0.5rem;
       width: 100%;
     }
+
     button {
       font-weight: bold;
       cursor: pointer;
     }
+
     .radio-group {
       display: flex;
       flex-wrap: wrap;
       gap: 1rem;
+      margin-bottom: 1.5rem; /* ✅ Fix: add space below size options */
     }
+
     .radio-option {
       display: flex;
       align-items: center;
+      gap: 0.25rem; /* ✅ Fix: spacing between radio and label */
     }
-    .radio-option input {
-      margin-right: 0.25rem;
-    }
+
     table {
       width: 100%;
       border-collapse: collapse;
       margin-top: 2rem;
     }
+
     th, td {
       padding: 0.5rem;
       border: 1px solid #ccc;
       text-align: center;
     }
+
     .duplicate {
       color: red;
       font-weight: bold;
