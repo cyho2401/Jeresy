@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="="en">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -40,6 +40,12 @@
   gap: 0.5rem;
   font-size: 1rem;
   white-space: nowrap;
+}
+
+.size-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
 }
 
     table {
@@ -104,7 +110,7 @@
       <input type="text" id="jerseyNumber" pattern="^\\d{1,2}$" required />
     </label>
 
-    <label>Jersey Size:</label>
+    <label class="size-label">Jersey Size:</label>
     <div class="radio-group" id="sizeOptions">
   <label class="radio-option"><input type="radio" name="shirtSize" value="3XS" required /> 3XS</label>
   <label class="radio-option"><input type="radio" name="shirtSize" value="2XS" /> 2XS</label>
