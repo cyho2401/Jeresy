@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>豐玉 Gratitude Jersey Selector</title>
+  <title>Jersey Selector</title>
   <style>
     body {
       font-family: sans-serif;
@@ -34,7 +34,7 @@
 </head>
 <body>
 
-  <h2>豐玉 Gratitude 🏀 Jersey Number & Size</h2>
+  <h2>🏀 Jersey Number & T-Shirt Size</h2>
 
   <form id="jerseyForm">
     <label>
@@ -48,17 +48,14 @@
     </label>
 
     <label>
-      Jersey Size:
+      T-Shirt Size:
       <select id="shirtSize" required>
         <option value="">Select size</option>
-        <option value="XXS">XXS</option>
-        <option value="XS">XS</option>
         <option value="S">S</option>
         <option value="M">M</option>
         <option value="L">L</option>
         <option value="XL">XL</option>
         <option value="XXL">XXL</option>
-        <option value="XXXL">XXXL</option>
       </select>
     </label>
 
@@ -163,7 +160,7 @@
 
         const remarksCell = document.createElement('td');
         if (countMap[entry.jerseyNumber] > 1) {
-          remarksCell.textContent = "⚠️ # Duplicated";
+          remarksCell.textContent = "⚠️ Duplicated";
           remarksCell.classList.add('duplicate');
         } else {
           remarksCell.textContent = "";
@@ -172,7 +169,13 @@
 
         const timeCell = document.createElement('td');
         const date = new Date(entry.timestamp || Date.now());
-        timeCell.textContent = date.toLocaleString();
+        timeCell.textContent = date.toLocaleString('en-US', {
+          month: 'short',
+          day: 'numeric',
+          hour: 'numeric',
+          minute: '2-digit',
+          hour12: true
+        });
         row.appendChild(timeCell);
 
         tableBody.appendChild(row);
