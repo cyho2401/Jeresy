@@ -27,20 +27,19 @@
       font-weight: bold;
       cursor: pointer;
     }
-
-    .radio-group {
+.radio-group {
   display: grid;
-  grid-template-columns: repeat(4, 1fr); /* 4 columns for neatness */
-  gap: 1rem 0.5rem;
+  grid-template-columns: repeat(3, 1fr); /* 3 columns */
+  gap: 1rem 1.5rem;
   margin-bottom: 2rem;
+  max-width: 400px;
 }
-
 .radio-option {
   display: flex;
   align-items: center;
   gap: 0.5rem;
   font-size: 1rem;
-  white-space: nowrap; /* Prevents text wrapping */
+  white-space: nowrap;
 }
 
     table {
@@ -107,16 +106,16 @@
 
     <label>Jersey Size:</label>
     <div class="radio-group" id="sizeOptions">
-      <label class="radio-option"><input type="radio" name="shirtSize" value="3XS" required /> 3XS</label>
-      <label class="radio-option"><input type="radio" name="shirtSize" value="2XS" /> 2XS</label>
-      <label class="radio-option"><input type="radio" name="shirtSize" value="XS" /> XS</label>
-      <label class="radio-option"><input type="radio" name="shirtSize" value="S" /> S</label>
-      <label class="radio-option"><input type="radio" name="shirtSize" value="M" /> M</label>
-      <label class="radio-option"><input type="radio" name="shirtSize" value="L" /> L</label>
-      <label class="radio-option"><input type="radio" name="shirtSize" value="XL" /> XL</label>
-      <label class="radio-option"><input type="radio" name="shirtSize" value="2L" /> 2L</label>
-      <label class="radio-option"><input type="radio" name="shirtSize" value="3XL" /> 3XL</label>
-    </div>
+  <label class="radio-option"><input type="radio" name="shirtSize" value="3XS" required /> 3XS</label>
+  <label class="radio-option"><input type="radio" name="shirtSize" value="2XS" /> 2XS</label>
+  <label class="radio-option"><input type="radio" name="shirtSize" value="XS" /> XS</label>
+  <label class="radio-option"><input type="radio" name="shirtSize" value="S" /> S</label>
+  <label class="radio-option"><input type="radio" name="shirtSize" value="M" /> M</label>
+  <label class="radio-option"><input type="radio" name="shirtSize" value="L" /> L</label>
+  <label class="radio-option"><input type="radio" name="shirtSize" value="XL" /> XL</label>
+  <label class="radio-option"><input type="radio" name="shirtSize" value="2L" /> 2L</label>
+  <label class="radio-option"><input type="radio" name="shirtSize" value="3XL" /> 3XL</label>
+</div>
 
     <button type="submit">Submit</button>
   </form>
