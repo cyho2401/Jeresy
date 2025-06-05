@@ -14,7 +14,22 @@
     input, select, button {
       padding: 0.5rem;
       margin: 0.5rem 0;
+    }
+    button {
       width: 100%;
+    }
+    .radio-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+    .radio-option {
+      display: flex;
+      align-items: center;
+    }
+    .radio-option input {
+      margin-right: 0.25rem;
     }
     table {
       width: 100%;
@@ -34,7 +49,7 @@
 </head>
 <body>
 
-  <h2>🏀 Jersey Number & T-Shirt Size</h2>
+  <h2>🏀 Jersey Number & Jersey Size</h2>
 
   <form id="jerseyForm">
     <label>
@@ -47,17 +62,18 @@
       <input type="text" id="jerseyNumber" pattern="^\d{1,2}$" required />
     </label>
 
-    <label>
-      T-Shirt Size:
-      <select id="shirtSize" required>
-        <option value="">Select size</option>
-        <option value="S">S</option>
-        <option value="M">M</option>
-        <option value="L">L</option>
-        <option value="XL">XL</option>
-        <option value="XXL">XXL</option>
-      </select>
-    </label>
+    <label>Jersey Size:</label>
+    <div class="radio-group" id="sizeOptions">
+      <label class="radio-option"><input type="radio" name="shirtSize" value="3XS" required /> 3XS</label>
+      <label class="radio-option"><input type="radio" name="shirtSize" value="2XS" /> 2XS</label>
+      <label class="radio-option"><input type="radio" name="shirtSize" value="XS" /> XS</label>
+      <label class="radio-option"><input type="radio" name="shirtSize" value="S" /> S</label>
+      <label class="radio-option"><input type="radio" name="shirtSize" value="M" /> M</label>
+      <label class="radio-option"><input type="radio" name="shirtSize" value="L" /> L</label>
+      <label class="radio-option"><input type="radio" name="shirtSize" value="XL" /> XL</label>
+      <label class="radio-option"><input type="radio" name="shirtSize" value="2L" /> 2L</label>
+      <label class="radio-option"><input type="radio" name="shirtSize" value="3XL" /> 3XL</label>
+    </div>
 
     <button type="submit">Submit</button>
   </form>
@@ -103,7 +119,7 @@
 
       const name = document.getElementById('playerName').value.trim();
       const number = document.getElementById('jerseyNumber').value.trim();
-      const size = document.getElementById('shirtSize').value;
+      const size = document.querySelector('input[name="shirtSize"]:checked')?.value;
 
       if (!name || !/^\d{1,2}$/.test(number) || !size) {
         alert("Please fill all fields with valid input.");
@@ -160,7 +176,7 @@
 
         const remarksCell = document.createElement('td');
         if (countMap[entry.jerseyNumber] > 1) {
-          remarksCell.textContent = "⚠️ Duplicated";
+          remarksCell.textContent = "⚠️ # Duplicated";
           remarksCell.classList.add('duplicate');
         } else {
           remarksCell.textContent = "";
@@ -175,7 +191,7 @@
         hours = hours % 12 || 12;
         const timeFormatted = `${hours}:${minutes}${ampm}`;
         const dateFormatted = `${date.getDate()}/${date.getMonth() + 1}`;
-        timeCell.textContent = `${dateFormatted}, ${timeFormatted}`;
+        timeCell.textContent = `${dateFormatted} ${timeFormatted}`;
         row.appendChild(timeCell);
 
         tableBody.appendChild(row);
