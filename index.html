@@ -103,8 +103,7 @@
       e.preventDefault();
 
       const name = document.getElementById('playerName').value.trim();
-      const number = document.getElementById('jerseyNumber').value.padStart(2, '0');
-      const size = document.getElementById('shirtSize').value;
+const number = document.getElementById('jerseyNumber').value.trim();      const size = document.getElementById('shirtSize').value;
 
       if (!name || isNaN(number) || !size) {
         alert("Please fill all fields.");
@@ -157,7 +156,7 @@
         row.appendChild(nameCell);
 
         const numberCell = document.createElement('td');
-        numberCell.textContent = entry.jerseyNumber;
+numberCell.textContent = entry.jerseyNumber;
         row.appendChild(numberCell);
 
         const sizeCell = document.createElement('td');
