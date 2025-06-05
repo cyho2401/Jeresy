@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Jersey Selector</title>
+  <title>豐玉 Gratitude Jersey Selector</title>
   <style>
     body {
       font-family: sans-serif;
@@ -34,7 +34,7 @@
 </head>
 <body>
 
-  <h2>🏀 Jersey Number & T-Shirt Size</h2>
+  <h2>🏀 Jersey Number & Size</h2>
 
   <form id="jerseyForm">
     <label>
@@ -44,11 +44,11 @@
 
     <label>
       Jersey Number (00–99):
-      <input type="number" id="jerseyNumber" min="0" max="99" required />
+      <input type="text" id="jerseyNumber" pattern="^\\d{1,2}$" required />
     </label>
 
     <label>
-      T-Shirt Size:
+      Jersey Size:
       <select id="shirtSize" required>
         <option value="">Select size</option>
         <option value="S">S</option>
@@ -67,10 +67,10 @@
     <thead>
       <tr>
         <th>Player</th>
-        <th>Jersey #</th>
         <th>Size</th>
-        <th>Submitted At</th>
+        <th>Jersey #</th>
         <th>Remarks</th>
+        <th>Submitted At</th>
       </tr>
     </thead>
     <tbody>
@@ -78,7 +78,6 @@
     </tbody>
   </table>
 
-  <!-- ✅ Firebase SDK -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
@@ -103,10 +102,11 @@
       e.preventDefault();
 
       const name = document.getElementById('playerName').value.trim();
-const number = document.getElementById('jerseyNumber').value.trim();      const size = document.getElementById('shirtSize').value;
+      const number = document.getElementById('jerseyNumber').value.trim();
+      const size = document.getElementById('shirtSize').value;
 
-      if (!name || isNaN(number) || !size) {
-        alert("Please fill all fields.");
+      if (!name || !/^\d{1,2}$/.test(number) || !size) {
+        alert("Please fill all fields with valid input.");
         return;
       }
 
@@ -131,21 +131,16 @@ const number = document.getElementById('jerseyNumber').value.trim();      const 
 
       if (!data) return;
 
-      // ✅ Create array of entries
       const entries = Object.entries(data);
 
-      // ✅ Count duplicates
       const countMap = {};
       for (const [id, entry] of entries) {
         const num = entry.jerseyNumber;
         countMap[num] = (countMap[num] || 0) + 1;
       }
 
-      // ✅ Sort by jersey number
       entries.sort((a, b) => {
-        const numA = parseInt(a[1].jerseyNumber);
-        const numB = parseInt(b[1].jerseyNumber);
-        return numA - numB;
+        return parseInt(a[1].jerseyNumber) - parseInt(b[1].jerseyNumber);
       });
 
       for (const [id, entry] of entries) {
@@ -155,18 +150,13 @@ const number = document.getElementById('jerseyNumber').value.trim();      const 
         nameCell.textContent = entry.name;
         row.appendChild(nameCell);
 
-        const numberCell = document.createElement('td');
-numberCell.textContent = entry.jerseyNumber;
-        row.appendChild(numberCell);
-
         const sizeCell = document.createElement('td');
         sizeCell.textContent = entry.size;
         row.appendChild(sizeCell);
 
-        const timeCell = document.createElement('td');
-        const date = new Date(entry.timestamp || Date.now());
-        timeCell.textContent = date.toLocaleString();
-        row.appendChild(timeCell);
+        const numberCell = document.createElement('td');
+        numberCell.textContent = entry.jerseyNumber;
+        row.appendChild(numberCell);
 
         const remarksCell = document.createElement('td');
         if (countMap[entry.jerseyNumber] > 1) {
@@ -176,6 +166,11 @@ numberCell.textContent = entry.jerseyNumber;
           remarksCell.textContent = "";
         }
         row.appendChild(remarksCell);
+
+        const timeCell = document.createElement('td');
+        const date = new Date(entry.timestamp || Date.now());
+        timeCell.textContent = date.toLocaleString();
+        row.appendChild(timeCell);
 
         tableBody.appendChild(row);
       }
