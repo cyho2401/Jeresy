@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin - Jersey Selections</title>
   <style>
     body {
@@ -28,6 +28,11 @@
       margin-bottom: 1rem;
     }
 
+    td[contenteditable] {
+      background-color: #fdfdfd;
+      cursor: text;
+    }
+
     .duplicate {
       color: red;
       font-weight: bold;
@@ -37,11 +42,6 @@
       padding: 0.25rem 0.5rem;
       font-size: 0.9rem;
       cursor: pointer;
-    }
-
-    input[type="text"] {
-      width: 100%;
-      padding: 0.25rem;
     }
   </style>
 </head>
@@ -57,7 +57,6 @@
         <th>Jersey #</th>
         <th>Remarks</th>
         <th>Submitted At</th>
-        <th>Edit</th>
         <th>Delete</th>
       </tr>
     </thead>
@@ -111,28 +110,34 @@
       for (const [id, entry] of entries) {
         const row = document.createElement('tr');
 
-        // Editable Fields
+        // Editable Player
         const nameCell = document.createElement('td');
-        const nameInput = document.createElement('input');
-        nameInput.type = 'text';
-        nameInput.value = entry.name;
-        nameCell.appendChild(nameInput);
+        nameCell.contentEditable = true;
+        nameCell.textContent = entry.name;
+        nameCell.addEventListener('blur', () => {
+          update(ref(db, `jerseys/${id}`), { name: nameCell.textContent.trim() });
+        });
         row.appendChild(nameCell);
 
+        // Editable Size
         const sizeCell = document.createElement('td');
-        const sizeInput = document.createElement('input');
-        sizeInput.type = 'text';
-        sizeInput.value = entry.size;
-        sizeCell.appendChild(sizeInput);
+        sizeCell.contentEditable = true;
+        sizeCell.textContent = entry.size;
+        sizeCell.addEventListener('blur', () => {
+          update(ref(db, `jerseys/${id}`), { size: sizeCell.textContent.trim() });
+        });
         row.appendChild(sizeCell);
 
+        // Editable Jersey #
         const numberCell = document.createElement('td');
-        const numberInput = document.createElement('input');
-        numberInput.type = 'text';
-        numberInput.value = entry.jerseyNumber;
-        numberCell.appendChild(numberInput);
+        numberCell.contentEditable = true;
+        numberCell.textContent = entry.jerseyNumber;
+        numberCell.addEventListener('blur', () => {
+          update(ref(db, `jerseys/${id}`), { jerseyNumber: numberCell.textContent.trim() });
+        });
         row.appendChild(numberCell);
 
+        // Remarks (not editable)
         const remarksCell = document.createElement('td');
         if (countMap[entry.jerseyNumber] > 1) {
           remarksCell.textContent = "⚠️ # Duplicated";
@@ -142,6 +147,7 @@
         }
         row.appendChild(remarksCell);
 
+        // Timestamp
         const timeCell = document.createElement('td');
         const date = new Date(entry.timestamp || Date.now());
         let hours = date.getHours();
@@ -152,21 +158,6 @@
         const dateFormatted = `${date.getDate()}/${date.getMonth() + 1}`;
         timeCell.textContent = `${dateFormatted} ${timeFormatted}`;
         row.appendChild(timeCell);
-
-        // Edit Button
-        const editCell = document.createElement('td');
-        const editBtn = document.createElement('button');
-        editBtn.textContent = "Save";
-        editBtn.onclick = () => {
-          const updated = {
-            name: nameInput.value.trim(),
-            size: sizeInput.value.trim(),
-            jerseyNumber: numberInput.value.trim()
-          };
-          update(ref(db, `jerseys/${id}`), updated);
-        };
-        editCell.appendChild(editBtn);
-        row.appendChild(editCell);
 
         // Delete Button
         const deleteCell = document.createElement('td');
