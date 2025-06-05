@@ -44,7 +44,7 @@
 
     <label>
       Jersey Number (00–99):
-      <input type="text" id="jerseyNumber" pattern="^\\d{1,2}$" required />
+      <input type="text" id="jerseyNumber" pattern="^\d{1,2}$" required />
     </label>
 
     <label>
@@ -169,13 +169,13 @@
 
         const timeCell = document.createElement('td');
         const date = new Date(entry.timestamp || Date.now());
-        timeCell.textContent = date.toLocaleString('en-US', {
-          month: 'short',
-          day: 'numeric',
-          hour: 'numeric',
-          minute: '2-digit',
-          hour12: true
-        });
+        let hours = date.getHours();
+        const minutes = date.getMinutes().toString().padStart(2, '0');
+        const ampm = hours >= 12 ? 'pm' : 'am';
+        hours = hours % 12 || 12;
+        const timeFormatted = `${hours}:${minutes}${ampm}`;
+        const dateFormatted = `${date.getDate()}/${date.getMonth() + 1}`;
+        timeCell.textContent = `${dateFormatted}, ${timeFormatted}`;
         row.appendChild(timeCell);
 
         tableBody.appendChild(row);
