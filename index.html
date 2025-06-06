@@ -70,28 +70,160 @@
       border-color: #4CAF50;
     }
 
+    /* Beautified table styles */
+    .table-section {
+      margin-top: 2rem;
+    }
+
+    .table-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+      font-size: 20px;
+      font-weight: bold;
+      color: #2c3e50;
+    }
+
+    .table-container {
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      overflow: hidden;
+      border: 1px solid #e9ecef;
+    }
+
     table {
       width: 100%;
       border-collapse: collapse;
-      margin-top: 2rem;
-      background: white;
-      border-radius: 6px;
-      overflow: hidden;
     }
 
-    th, td {
-      padding: 0.5rem;
-      border: 1px solid #ccc;
+    thead {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    th {
+      padding: 16px 12px;
+      text-align: left;
+      font-weight: 600;
+      color: white;
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border: none;
+    }
+
+    th:nth-child(3),
+    th:nth-child(4),
+    td:nth-child(3),
+    td:nth-child(4) {
       text-align: center;
     }
 
-    .duplicate {
-      background-color: #ffe5e5;
-      color: #b30000;
-      font-weight: bold;
+    tbody tr {
+      transition: all 0.2s ease;
+      border-bottom: 1px solid #f0f0f0;
     }
 
-    /* New horizontal bar chart design */
+    tbody tr:hover {
+      background-color: #f8f9fa;
+      transform: scale(1.01);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    tbody tr:last-child {
+      border-bottom: none;
+    }
+
+    td {
+      padding: 14px 12px;
+      color: #495057;
+      font-size: 15px;
+      border: none;
+    }
+
+    /* Player name styling */
+    td:first-child {
+      font-weight: 600;
+      color: #2c3e50;
+    }
+
+    /* Size badge styling */
+    .size-badge {
+      display: inline-block;
+      padding: 4px 12px;
+      background: #e3f2fd;
+      color: #1976d2;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    /* Jersey number styling */
+    .jersey-number {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      background: #f5f5f5;
+      border: 2px solid #ddd;
+      border-radius: 50%;
+      font-weight: bold;
+      font-size: 16px;
+      color: #333;
+    }
+
+    /* Duplicate styling */
+    .duplicate .jersey-number {
+      background: #ffe5e5;
+      border-color: #ff6b6b;
+      color: #c92a2a;
+    }
+
+    .duplicate-name {
+      color: #c92a2a !important;
+      position: relative;
+    }
+
+    .duplicate-name::after {
+      content: "⚠";
+      margin-left: 6px;
+      color: #ff6b6b;
+    }
+
+    /* Remarks styling */
+    .remark-warning {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      background: #fff3cd;
+      color: #856404;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .remark-ok {
+      color: #28a745;
+      font-weight: 600;
+    }
+
+    /* Empty state */
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: #6c757d;
+    }
+
+    .empty-state-icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+      opacity: 0.3;
+    }
+
+    /* Horizontal bar chart design */
     .size-distribution {
       margin-top: 2rem;
       background: white;
@@ -251,6 +383,22 @@
       .distribution-title {
         font-size: 18px;
       }
+
+      th, td {
+        padding: 12px 8px;
+        font-size: 14px;
+      }
+
+      .jersey-number {
+        width: 35px;
+        height: 35px;
+        font-size: 14px;
+      }
+
+      .remark-warning {
+        font-size: 11px;
+        padding: 4px 8px;
+      }
     }
   </style>
 </head>
@@ -301,20 +449,27 @@
     <button type="submit">Submit</button>
   </form>
 
-  <h3>📋 Current Selections</h3>
-  <table id="selectionTable">
-    <thead>
-      <tr>
-        <th>Player</th>
-        <th>Size</th>
-        <th>Jersey #</th>
-        <th>Remarks</th>
-      </tr>
-    </thead>
-    <tbody>
-      <!-- Filled by JS -->
-    </tbody>
-  </table>
+  <div class="table-section">
+    <div class="table-header">
+      <span>📋</span>
+      <span>Current Selections</span>
+    </div>
+    <div class="table-container">
+      <table id="selectionTable">
+        <thead>
+          <tr>
+            <th>Player</th>
+            <th>Size</th>
+            <th>Jersey #</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Filled by JS -->
+        </tbody>
+      </table>
+    </div>
+  </div>
 
   <div class="size-distribution" id="sizeDistribution">
     <div class="distribution-header">
@@ -421,6 +576,14 @@
       sizeChart.innerHTML = '';
 
       if (!data) {
+        tableBody.innerHTML = `
+          <tr>
+            <td colspan="4" class="empty-state">
+              <div class="empty-state-icon">🏀</div>
+              <div>目前還沒有任何球衣登記</div>
+            </td>
+          </tr>
+        `;
         sizeChart.innerHTML = '<div class="empty-state">目前還沒有任何訂購記錄</div>';
         totalBadge.textContent = '總計: 0 件';
         return;
@@ -451,29 +614,36 @@
         const nameDup = nameCount[nameKey] > 1;
         const numDup = numberCount[numKey] > 1;
 
+        // Player name cell
         const nameCell = document.createElement('td');
         nameCell.textContent = entry.name;
-        if (nameDup) nameCell.classList.add('duplicate');
+        if (nameDup) nameCell.classList.add('duplicate-name');
         row.appendChild(nameCell);
 
+        // Size cell with badge
         const sizeCell = document.createElement('td');
-        sizeCell.textContent = entry.size;
+        sizeCell.innerHTML = `<span class="size-badge">${entry.size}</span>`;
         row.appendChild(sizeCell);
 
+        // Jersey number cell with circle
         const numberCell = document.createElement('td');
-        numberCell.textContent = entry.jerseyNumber;
+        const numberDiv = document.createElement('div');
+        numberDiv.className = 'jersey-number';
+        numberDiv.textContent = entry.jerseyNumber.padStart(2, '0');
+        numberCell.appendChild(numberDiv);
         if (numDup) numberCell.classList.add('duplicate');
         row.appendChild(numberCell);
 
+        // Status/Remarks cell
         const remarksCell = document.createElement('td');
         if (nameDup && numDup) {
-          remarksCell.textContent = "⚠️ Name & # Duplicated";
+          remarksCell.innerHTML = '<span class="remark-warning">⚠ 姓名與號碼重複</span>';
         } else if (nameDup) {
-          remarksCell.textContent = "⚠️ Name Duplicated";
+          remarksCell.innerHTML = '<span class="remark-warning">⚠ 姓名重複</span>';
         } else if (numDup) {
-          remarksCell.textContent = "⚠️ # Duplicated";
+          remarksCell.innerHTML = '<span class="remark-warning">⚠ 號碼重複</span>';
         } else {
-          remarksCell.textContent = "";
+          remarksCell.innerHTML = '<span class="remark-ok">✓</span>';
         }
         row.appendChild(remarksCell);
 
