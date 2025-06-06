@@ -91,83 +91,136 @@
       font-weight: bold;
     }
 
-    /* Improved size counts design */
-    .counts-container {
+    /* New horizontal bar chart design */
+    .size-distribution {
       margin-top: 2rem;
       background: white;
-      border-radius: 12px;
-      padding: 20px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
     }
 
-    .counts-header {
+    .distribution-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+
+    .distribution-title {
+      font-size: 20px;
+      font-weight: bold;
+      color: #2c3e50;
       display: flex;
       align-items: center;
       gap: 8px;
-      margin-bottom: 16px;
-      font-size: 18px;
+    }
+
+    .total-badge {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 14px;
       font-weight: bold;
-      color: #333;
     }
 
-    .counts-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    .size-chart {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .size-row {
+      display: flex;
+      align-items: center;
       gap: 12px;
+      position: relative;
     }
 
-    .size-count-item {
-      background: #f8f9fa;
-      border: 2px solid #e9ecef;
-      border-radius: 12px;
-      padding: 12px;
-      text-align: center;
-      transition: all 0.2s ease;
+    .size-name {
+      min-width: 50px;
+      font-weight: 600;
+      color: #495057;
+      font-size: 14px;
+    }
+
+    .bar-container {
+      flex: 1;
+      height: 32px;
+      background: #f0f0f0;
+      border-radius: 16px;
       position: relative;
       overflow: hidden;
     }
 
-    .size-count-item:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-      border-color: #4CAF50;
+    .bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #4CAF50, #45a049);
+      border-radius: 16px;
+      transition: width 0.5s ease;
+      position: relative;
+      min-width: 0;
     }
 
-    .size-label {
-      font-size: 20px;
-      font-weight: bold;
-      color: #495057;
-      margin-bottom: 4px;
-    }
-
-    .size-count {
-      font-size: 24px;
-      font-weight: bold;
-      color: #4CAF50;
-    }
-
-    .size-count-bar {
+    .bar-label {
       position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      height: 4px;
-      background: #4CAF50;
-      transition: height 0.3s ease;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-weight: bold;
+      font-size: 14px;
+      color: #333;
+      z-index: 1;
     }
 
-    .total-count {
-      margin-top: 16px;
-      padding-top: 16px;
-      border-top: 2px solid #e9ecef;
+    .bar-percentage {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 12px;
+      color: white;
+      font-weight: 600;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .bar-fill:hover .bar-percentage {
+      opacity: 1;
+    }
+
+    .empty-state {
       text-align: center;
-      font-size: 16px;
+      color: #6c757d;
+      padding: 20px;
+      font-style: italic;
+    }
+
+    .size-legend {
+      margin-top: 20px;
+      padding-top: 20px;
+      border-top: 1px solid #e9ecef;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
       color: #6c757d;
     }
 
-    .total-count strong {
-      color: #333;
-      font-size: 20px;
+    .legend-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #4CAF50;
     }
 
     .admin-link {
@@ -186,16 +239,17 @@
     }
 
     @media (max-width: 480px) {
-      .counts-grid {
-        grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+      .size-name {
+        min-width: 40px;
+        font-size: 12px;
       }
       
-      .size-label {
-        font-size: 16px;
+      .bar-container {
+        height: 28px;
       }
       
-      .size-count {
-        font-size: 20px;
+      .distribution-title {
+        font-size: 18px;
       }
     }
   </style>
@@ -262,16 +316,24 @@
     </tbody>
   </table>
 
-  <div id="sizeCounts" class="counts-container">
-    <div class="counts-header">
-      <span>📊</span>
-      <span>Size Distribution</span>
+  <div class="size-distribution" id="sizeDistribution">
+    <div class="distribution-header">
+      <div class="distribution-title">
+        <span>📊</span>
+        <span>尺寸分布</span>
+      </div>
+      <div class="total-badge" id="totalBadge">
+        總計: 0 件
+      </div>
     </div>
-    <div class="counts-grid" id="sizeCountsGrid">
+    <div class="size-chart" id="sizeChart">
       <!-- Filled by JS -->
     </div>
-    <div class="total-count" id="totalCount">
-      <!-- Filled by JS -->
+    <div class="size-legend">
+      <div class="legend-item">
+        <div class="legend-dot"></div>
+        <span>每個尺寸的訂購數量</span>
+      </div>
     </div>
   </div>
 
@@ -321,8 +383,8 @@
 
     const form = document.getElementById('jerseyForm');
     const tableBody = document.querySelector('#selectionTable tbody');
-    const sizeCountsGrid = document.getElementById('sizeCountsGrid');
-    const totalCountDiv = document.getElementById('totalCount');
+    const sizeChart = document.getElementById('sizeChart');
+    const totalBadge = document.getElementById('totalBadge');
 
     form.addEventListener('submit', function (e) {
       e.preventDefault();
@@ -356,11 +418,11 @@
     onValue(ref(db, 'jerseys'), (snapshot) => {
       const data = snapshot.val();
       tableBody.innerHTML = '';
-      sizeCountsGrid.innerHTML = '';
-      totalCountDiv.innerHTML = '';
+      sizeChart.innerHTML = '';
 
       if (!data) {
-        totalCountDiv.innerHTML = 'Total Players: <strong>0</strong>';
+        sizeChart.innerHTML = '<div class="empty-state">目前還沒有任何訂購記錄</div>';
+        totalBadge.textContent = '總計: 0 件';
         return;
       }
 
@@ -418,7 +480,7 @@
         tableBody.appendChild(row);
       }
 
-      // Display improved size counts
+      // Create horizontal bar chart
       const allSizes = ['3XS', '2XS', 'XS', 'S', 'M', 'L', 'XL', '2XL', '3XL'];
       const maxCount = Math.max(...Object.values(sizeCount), 1);
       let totalPlayers = 0;
@@ -427,21 +489,28 @@
         const count = sizeCount[size] || 0;
         totalPlayers += count;
         
-        const sizeItem = document.createElement('div');
-        sizeItem.className = 'size-count-item';
-        
-        const barHeight = count > 0 ? (count / maxCount) * 20 : 0;
-        
-        sizeItem.innerHTML = `
-          <div class="size-label">${size}</div>
-          <div class="size-count">${count}</div>
-          <div class="size-count-bar" style="height: ${barHeight}px;"></div>
-        `;
-        
-        sizeCountsGrid.appendChild(sizeItem);
+        if (count > 0) {
+          const percentage = Math.round((count / entries.length) * 100);
+          const barWidth = (count / maxCount) * 100;
+          
+          const sizeRow = document.createElement('div');
+          sizeRow.className = 'size-row';
+          
+          sizeRow.innerHTML = `
+            <div class="size-name">${size}</div>
+            <div class="bar-container">
+              <div class="bar-fill" style="width: ${barWidth}%">
+                <span class="bar-percentage">${percentage}%</span>
+              </div>
+              <div class="bar-label">${count}</div>
+            </div>
+          `;
+          
+          sizeChart.appendChild(sizeRow);
+        }
       });
 
-      totalCountDiv.innerHTML = `Total Players: <strong>${totalPlayers}</strong>`;
+      totalBadge.textContent = `總計: ${totalPlayers} 件`;
     });
   </script>
 </body>
