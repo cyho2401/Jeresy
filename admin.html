@@ -236,12 +236,45 @@
       background-color: white;
     }
 
-    .duplicate {
+    /* Duplicate styling */
+    .duplicate-number {
       color: #dc3545;
       font-weight: 600;
+    }
+
+    .duplicate-name {
+      color: #ff6b6b;
+      font-weight: 600;
+    }
+
+    .status-badges {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      align-items: center;
+    }
+
+    .status-badge {
       display: inline-flex;
       align-items: center;
-      gap: 6px;
+      gap: 4px;
+      padding: 4px 12px;
+      border-radius: 16px;
+      font-size: 12px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .status-badge.warning {
+      background: #fff3cd;
+      color: #856404;
+      border: 1px solid #ffeaa7;
+    }
+
+    .status-badge.success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
     }
 
     .delete-btn {
@@ -318,6 +351,20 @@
       th, td {
         padding: 12px 8px;
       }
+
+      .status-badges {
+        align-items: flex-start;
+      }
+
+      .stats-section {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 480px) {
+      .stats-section {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
@@ -363,9 +410,14 @@
         <div class="stat-label">總登記數量</div>
       </div>
       <div class="stat-card">
-        <div class="stat-icon">⚠️</div>
-        <div class="stat-value" id="duplicateCount">0</div>
+        <div class="stat-icon">🔢</div>
+        <div class="stat-value" id="numberDuplicateCount">0</div>
         <div class="stat-label">號碼重複</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">👥</div>
+        <div class="stat-value" id="nameDuplicateCount">0</div>
+        <div class="stat-label">姓名重複</div>
       </div>
       <div class="stat-card">
         <div class="stat-icon">📊</div>
@@ -473,7 +525,7 @@
             </td>
           </tr>
         `;
-        updateStats(0, 0, 0);
+        updateStats(0, 0, 0, 0);
         return;
       }
 
@@ -481,19 +533,30 @@
 
       // Count duplicates and sizes
       const numberCount = {};
+      const nameCount = {};
       const sizeSet = new Set();
-      let duplicateCount = 0;
+      let numberDuplicateEntries = 0;
+      let nameDuplicateEntries = 0;
 
+      // First pass: count occurrences
       for (const [id, entry] of entries) {
         const num = entry.jerseyNumber;
+        const name = entry.name.trim().toLowerCase();
         numberCount[num] = (numberCount[num] || 0) + 1;
+        nameCount[name] = (nameCount[name] || 0) + 1;
         sizeSet.add(entry.size);
       }
 
-      // Count entries with duplicate numbers
-      for (const count of Object.values(numberCount)) {
-        if (count > 1) {
-          duplicateCount++;
+      // Count entries with duplicates
+      const numberDuplicates = new Set();
+      const nameDuplicates = new Set();
+      
+      for (const [id, entry] of entries) {
+        if (numberCount[entry.jerseyNumber] > 1) {
+          numberDuplicates.add(entry.jerseyNumber);
+        }
+        if (nameCount[entry.name.trim().toLowerCase()] > 1) {
+          nameDuplicates.add(entry.name.trim().toLowerCase());
         }
       }
 
@@ -516,13 +579,20 @@
 
       for (const [id, entry] of entries) {
         const row = document.createElement('tr');
+        const nameKey = entry.name.trim().toLowerCase();
+        const isNumberDuplicate = numberCount[entry.jerseyNumber] > 1;
+        const isNameDuplicate = nameCount[nameKey] > 1;
 
         // Prepare data for export
+        const statusText = [];
+        if (isNumberDuplicate) statusText.push('號碼重複');
+        if (isNameDuplicate) statusText.push('姓名重複');
+        
         const exportRowData = {
           '球員姓名': entry.name,
           '尺寸': entry.size,
           '球衣號碼': entry.jerseyNumber,
-          '狀態': numberCount[entry.jerseyNumber] > 1 ? '號碼重複' : '正常',
+          '狀態': statusText.length > 0 ? statusText.join('、') : '正常',
           '登記時間': ''
         };
 
@@ -530,6 +600,9 @@
         const nameCell = document.createElement('td');
         nameCell.contentEditable = true;
         nameCell.textContent = entry.name;
+        if (isNameDuplicate) {
+          nameCell.classList.add('duplicate-name');
+        }
         nameCell.addEventListener('blur', () => {
           const newName = nameCell.textContent.trim();
           if (newName) {
@@ -570,6 +643,9 @@
         const numberCell = document.createElement('td');
         numberCell.contentEditable = true;
         numberCell.textContent = entry.jerseyNumber;
+        if (isNumberDuplicate) {
+          numberCell.classList.add('duplicate-number');
+        }
         numberCell.addEventListener('blur', () => {
           const newNumber = numberCell.textContent.trim();
           if (newNumber && /^(0|00|[1-9][0-9]?)$/.test(newNumber)) {
@@ -591,11 +667,23 @@
 
         // Status (not editable)
         const statusCell = document.createElement('td');
-        if (numberCount[entry.jerseyNumber] > 1) {
-          statusCell.innerHTML = '<span class="duplicate">⚠️ 號碼重複</span>';
+        const statusBadges = document.createElement('div');
+        statusBadges.className = 'status-badges';
+        
+        if (isNumberDuplicate && isNameDuplicate) {
+          statusBadges.innerHTML = `
+            <span class="status-badge warning">⚠️ 號碼重複</span>
+            <span class="status-badge warning">⚠️ 姓名重複</span>
+          `;
+        } else if (isNumberDuplicate) {
+          statusBadges.innerHTML = '<span class="status-badge warning">⚠️ 號碼重複</span>';
+        } else if (isNameDuplicate) {
+          statusBadges.innerHTML = '<span class="status-badge warning">⚠️ 姓名重複</span>';
         } else {
-          statusCell.innerHTML = '<span style="color: #28a745;">✓ 正常</span>';
+          statusBadges.innerHTML = '<span class="status-badge success">✓ 正常</span>';
         }
+        
+        statusCell.appendChild(statusBadges);
         row.appendChild(statusCell);
 
         // Timestamp
@@ -631,13 +719,14 @@
       }
 
       // Update statistics
-      updateStats(entries.length, duplicateCount, sizeSet.size);
+      updateStats(entries.length, numberDuplicates.size, nameDuplicates.size, sizeSet.size);
     });
 
     // Update statistics display
-    function updateStats(total, duplicates, sizes) {
+    function updateStats(total, numberDuplicates, nameDuplicates, sizes) {
       document.getElementById('totalCount').textContent = total;
-      document.getElementById('duplicateCount').textContent = duplicates;
+      document.getElementById('numberDuplicateCount').textContent = numberDuplicates;
+      document.getElementById('nameDuplicateCount').textContent = nameDuplicates;
       document.getElementById('sizeCount').textContent = sizes;
     }
 
@@ -657,6 +746,10 @@
         [''],
         ['匯出日期', new Date().toLocaleString('zh-TW')],
         ['總登記數量', currentData.length],
+        [''],
+        ['重複狀況統計'],
+        ['號碼重複數', document.getElementById('numberDuplicateCount').textContent],
+        ['姓名重複數', document.getElementById('nameDuplicateCount').textContent],
         [''],
         ['尺寸分佈'],
       ];
