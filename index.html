@@ -90,6 +90,10 @@
       font-weight: bold;
     }
 
+    .duplicate-row {
+      background-color: #fff3f3;
+    }
+
     .admin-link {
       margin: 1rem 0;
     }
@@ -136,17 +140,17 @@
     </label>
 
     <label>Jersey Size:</label>
-<div class="size-buttons" id="sizeButtons">
-  <button type="button" class="size-btn" data-size="3XS">3XS</button>
-  <button type="button" class="size-btn" data-size="2XS">2XS</button>
-  <button type="button" class="size-btn" data-size="XS">XS</button>
-  <button type="button" class="size-btn" data-size="S">S</button>
-  <button type="button" class="size-btn" data-size="M">M</button>
-  <button type="button" class="size-btn" data-size="L">L</button>
-  <button type="button" class="size-btn" data-size="XL">XL</button>
-  <button type="button" class="size-btn" data-size="2XL">2XL</button>
-  <button type="button" class="size-btn" data-size="3XL">3XL</button>
-</div>
+    <div class="size-buttons" id="sizeButtons">
+      <button type="button" class="size-btn" data-size="3XS">3XS</button>
+      <button type="button" class="size-btn" data-size="2XS">2XS</button>
+      <button type="button" class="size-btn" data-size="XS">XS</button>
+      <button type="button" class="size-btn" data-size="S">S</button>
+      <button type="button" class="size-btn" data-size="M">M</button>
+      <button type="button" class="size-btn" data-size="L">L</button>
+      <button type="button" class="size-btn" data-size="XL">XL</button>
+      <button type="button" class="size-btn" data-size="2XL">2XL</button>
+      <button type="button" class="size-btn" data-size="3XL">3XL</button>
+    </div>
 
     <input type="hidden" id="selectedSize" name="shirtSize" required />
 
@@ -251,11 +255,15 @@
       if (!data) return;
 
       const entries = Object.entries(data);
-      const countMap = {};
+
+      const numberCount = {};
+      const nameCount = {};
 
       for (const [id, entry] of entries) {
         const num = entry.jerseyNumber;
-        countMap[num] = (countMap[num] || 0) + 1;
+        const name = entry.name.trim().toLowerCase();
+        numberCount[num] = (numberCount[num] || 0) + 1;
+        nameCount[name] = (nameCount[name] || 0) + 1;
       }
 
       entries.sort((a, b) => parseInt(a[1].jerseyNumber) - parseInt(b[1].jerseyNumber));
@@ -263,17 +271,40 @@
       for (const [id, entry] of entries) {
         const row = document.createElement('tr');
 
-        row.innerHTML = `
-          <td>${entry.name}</td>
-          <td>${entry.size}</td>
-          <td>${entry.jerseyNumber}</td>
-          <td>${countMap[entry.jerseyNumber] > 1 ? "⚠️ # Duplicated" : ""}</td>
-        `;
+        const nameCell = document.createElement('td');
+        nameCell.textContent = entry.name;
+        row.appendChild(nameCell);
 
-        if (countMap[entry.jerseyNumber] > 1) {
-          row.querySelector('td:last-child').classList.add('duplicate');
+        const sizeCell = document.createElement('td');
+        sizeCell.textContent = entry.size;
+        row.appendChild(sizeCell);
+
+        const numberCell = document.createElement('td');
+        numberCell.textContent = entry.jerseyNumber;
+        row.appendChild(numberCell);
+
+        const remarksCell = document.createElement('td');
+        const nameKey = entry.name.trim().toLowerCase();
+        const numKey = entry.jerseyNumber;
+
+        const nameDup = nameCount[nameKey] > 1;
+        const numDup = numberCount[numKey] > 1;
+
+        if (nameDup && numDup) {
+          remarksCell.textContent = "⚠️ Name & # Duplicated";
+        } else if (nameDup) {
+          remarksCell.textContent = "⚠️ Name Duplicated";
+        } else if (numDup) {
+          remarksCell.textContent = "⚠️ # Duplicated";
+        } else {
+          remarksCell.textContent = "";
         }
 
+        if (nameDup || numDup) {
+          row.classList.add('duplicate-row');
+        }
+
+        row.appendChild(remarksCell);
         tableBody.appendChild(row);
       }
     });
