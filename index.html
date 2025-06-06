@@ -1,31 +1,102 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-TW">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>豐玉 Gratitude 🏀 Jersey Number & Size</title>
+  <title>豐玉感恩盃 🏀 球衣號碼登記系統</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      padding: 1rem;
-      max-width: 600px;
-      margin: auto;
-      background-color: #f5f5f5;
+    * {
+      box-sizing: border-box;
     }
 
-    /* Beautified form styles */
-    .form-container {
-      background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
-      border-radius: 20px;
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      margin: 0;
       padding: 0;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      min-height: 100vh;
+      position: relative;
+    }
+
+    /* Background pattern */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-image: 
+        radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.1) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .container {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 20px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Admin link styled */
+    .admin-link {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      z-index: 10;
+    }
+
+    .admin-link > a {
+      color: #6c757d;
+      text-decoration: none;
+      font-size: 14px;
+      opacity: 0.6;
+      transition: opacity 0.3s ease;
+    }
+
+    .admin-link > a:hover {
+      opacity: 1;
+    }
+
+    .admin-panel-button a {
+      display: inline-block;
+      padding: 8px 16px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border-radius: 8px;
+      font-weight: bold;
+      text-decoration: none;
+      margin-top: 8px;
+      font-size: 14px;
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+      transition: all 0.3s ease;
+    }
+
+    .admin-panel-button a:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+    }
+
+    /* Form container */
+    .form-container {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 24px;
+      padding: 0;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
       overflow: hidden;
-      margin-bottom: 2rem;
+      margin-bottom: 30px;
+      margin-top: 40px;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.8);
     }
 
     .form-header {
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      padding: 30px;
+      padding: 40px 30px;
       text-align: center;
       position: relative;
       overflow: hidden;
@@ -34,17 +105,27 @@
     .form-header::before {
       content: "🏀";
       position: absolute;
-      font-size: 120px;
+      font-size: 150px;
       opacity: 0.1;
-      right: -20px;
-      top: -20px;
+      right: -30px;
+      top: -30px;
       transform: rotate(-15deg);
+    }
+
+    .form-header::after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.3);
     }
 
     .form-header h2 {
       margin: 0;
       color: white;
-      font-size: 26px;
+      font-size: 28px;
       font-weight: bold;
       text-shadow: 0 2px 4px rgba(0,0,0,0.1);
       position: relative;
@@ -52,38 +133,43 @@
 
     .form-subtitle {
       color: rgba(255, 255, 255, 0.9);
-      font-size: 14px;
+      font-size: 16px;
       margin-top: 8px;
     }
 
     form {
-      padding: 30px;
+      padding: 35px;
       display: flex;
       flex-direction: column;
-      gap: 24px;
+      gap: 26px;
     }
 
     .form-group {
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 10px;
     }
 
     label {
       font-weight: 600;
-      color: #495057;
-      font-size: 14px;
+      color: #344054;
+      font-size: 15px;
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 8px;
     }
 
     .label-icon {
-      font-size: 16px;
+      font-size: 18px;
+    }
+
+    .required {
+      color: #dc3545;
+      margin-left: 4px;
     }
 
     input[type="text"] {
-      padding: 12px 16px;
+      padding: 14px 18px;
       border: 2px solid #e9ecef;
       border-radius: 12px;
       font-size: 16px;
@@ -100,30 +186,30 @@
 
     /* Size selection section */
     .size-selection {
-      background: #f8f9fa;
+      background: linear-gradient(145deg, #f8f9fa, #ffffff);
       border-radius: 16px;
-      padding: 20px;
-      margin: -8px 0 8px 0;
+      padding: 24px;
+      border: 1px solid #e9ecef;
     }
 
     .size-selection-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 16px;
+      margin-bottom: 20px;
     }
 
     .size-selection-title {
       font-weight: 600;
-      color: #495057;
-      font-size: 14px;
+      color: #344054;
+      font-size: 15px;
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 8px;
     }
 
     .size-hint {
-      font-size: 12px;
+      font-size: 13px;
       color: #6c757d;
       font-style: italic;
     }
@@ -131,16 +217,16 @@
     .size-buttons {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
+      gap: 12px;
     }
 
     .size-btn {
-      padding: 12px;
+      padding: 14px;
       border: 2px solid #e9ecef;
       background-color: white;
       cursor: pointer;
-      border-radius: 10px;
-      font-size: 15px;
+      border-radius: 12px;
+      font-size: 16px;
       font-weight: 600;
       transition: all 0.2s ease;
       text-align: center;
@@ -169,7 +255,7 @@
     .size-btn:hover {
       border-color: #667eea;
       transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.25);
     }
 
     .size-btn.selected {
@@ -183,18 +269,19 @@
 
     /* Submit button */
     button[type="submit"] {
-      padding: 14px 28px;
+      padding: 16px 32px;
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       color: white;
       border: none;
       border-radius: 12px;
-      font-size: 16px;
+      font-size: 17px;
       font-weight: 600;
       cursor: pointer;
       transition: all 0.3s ease;
       position: relative;
       overflow: hidden;
       box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+      margin-top: 8px;
     }
 
     button[type="submit"]::before {
@@ -210,7 +297,7 @@
 
     button[type="submit"]:hover {
       transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+      box-shadow: 0 6px 25px rgba(102, 126, 234, 0.4);
     }
 
     button[type="submit"]:hover::before {
@@ -221,36 +308,31 @@
       transform: translateY(0);
     }
 
-    /* Success animation */
-    @keyframes submitSuccess {
-      0% { transform: scale(1); }
-      50% { transform: scale(0.95); }
-      100% { transform: scale(1); }
+    /* Section card */
+    .section-card {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 20px;
+      padding: 30px;
+      margin-bottom: 30px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.8);
     }
 
-    .submit-success {
-      animation: submitSuccess 0.3s ease;
-    }
-
-    /* Beautified table styles */
-    .table-section {
-      margin-top: 2rem;
-    }
-
-    .table-header {
+    .section-header {
       display: flex;
       align-items: center;
       gap: 12px;
-      margin-bottom: 16px;
-      font-size: 20px;
+      margin-bottom: 24px;
+      font-size: 22px;
       font-weight: bold;
       color: #2c3e50;
     }
 
+    /* Table container */
     .table-container {
       background: white;
       border-radius: 16px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
       overflow: hidden;
       border: 1px solid #e9ecef;
     }
@@ -265,13 +347,12 @@
     }
 
     th {
-      padding: 16px 12px;
+      padding: 18px 16px;
       text-align: left;
       font-weight: 600;
       color: white;
-      font-size: 14px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
+      font-size: 15px;
+      letter-spacing: 0.3px;
       border: none;
     }
 
@@ -298,7 +379,7 @@
     }
 
     td {
-      padding: 14px 12px;
+      padding: 16px;
       color: #495057;
       font-size: 15px;
       border: none;
@@ -313,9 +394,9 @@
     /* Size badge styling */
     .size-badge {
       display: inline-block;
-      padding: 4px 12px;
-      background: #e3f2fd;
-      color: #1976d2;
+      padding: 6px 14px;
+      background: linear-gradient(145deg, #e3f2fd, #bbdefb);
+      color: #1565c0;
       border-radius: 20px;
       font-size: 13px;
       font-weight: 600;
@@ -326,19 +407,19 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      width: 40px;
-      height: 40px;
-      background: #f5f5f5;
+      width: 45px;
+      height: 45px;
+      background: linear-gradient(145deg, #f5f5f5, #e0e0e0);
       border: 2px solid #ddd;
       border-radius: 50%;
       font-weight: bold;
-      font-size: 16px;
+      font-size: 17px;
       color: #333;
     }
 
     /* Duplicate styling */
     .duplicate .jersey-number {
-      background: #ffe5e5;
+      background: linear-gradient(145deg, #ffe5e5, #ffcccc);
       border-color: #ff6b6b;
       color: #c92a2a;
     }
@@ -359,17 +440,18 @@
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      padding: 6px 12px;
-      background: #fff3cd;
+      padding: 8px 14px;
+      background: linear-gradient(145deg, #fff3cd, #ffe5a1);
       color: #856404;
       border-radius: 20px;
-      font-size: 12px;
+      font-size: 13px;
       font-weight: 600;
     }
 
     .remark-ok {
       color: #28a745;
       font-weight: 600;
+      font-size: 18px;
     }
 
     /* Empty state */
@@ -380,86 +462,81 @@
     }
 
     .empty-state-icon {
-      font-size: 48px;
+      font-size: 64px;
       margin-bottom: 16px;
       opacity: 0.3;
     }
 
-    /* Horizontal bar chart design */
-    .size-distribution {
-      margin-top: 2rem;
-      background: white;
-      border-radius: 16px;
-      padding: 24px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-    }
-
+    /* Distribution header */
     .distribution-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 24px;
+      margin-bottom: 28px;
     }
 
     .distribution-title {
-      font-size: 20px;
+      font-size: 22px;
       font-weight: bold;
       color: #2c3e50;
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
     }
 
     .total-badge {
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       color: white;
-      padding: 8px 16px;
-      border-radius: 20px;
-      font-size: 14px;
+      padding: 10px 20px;
+      border-radius: 24px;
+      font-size: 15px;
       font-weight: bold;
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
     }
 
     .size-chart {
       display: flex;
       flex-direction: column;
-      gap: 16px;
+      gap: 18px;
     }
 
     .size-row {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 16px;
       position: relative;
     }
 
     .size-name {
-      min-width: 50px;
+      min-width: 55px;
       font-weight: 600;
       color: #495057;
-      font-size: 14px;
+      font-size: 15px;
     }
 
     .bar-container {
       flex: 1;
-      height: 32px;
-      background: #f0f0f0;
-      border-radius: 16px;
+      height: 36px;
+      background: linear-gradient(145deg, #f0f0f0, #e0e0e0);
+      border-radius: 18px;
       position: relative;
       overflow: hidden;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
     }
 
     .bar-fill {
       height: 100%;
       background: linear-gradient(90deg, #4CAF50, #45a049);
-      border-radius: 16px;
+      border-radius: 18px;
       transition: width 0.5s ease;
       position: relative;
       min-width: 0;
+      box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
     }
 
     .bar-label {
       position: absolute;
-      right: 12px;
+      right: 14px;
       top: 50%;
       transform: translateY(-50%);
       font-weight: bold;
@@ -470,14 +547,15 @@
 
     .bar-percentage {
       position: absolute;
-      left: 12px;
+      left: 14px;
       top: 50%;
       transform: translateY(-50%);
-      font-size: 12px;
+      font-size: 13px;
       color: white;
       font-weight: 600;
       opacity: 0;
       transition: opacity 0.3s ease;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.2);
     }
 
     .bar-fill:hover .bar-percentage {
@@ -485,12 +563,12 @@
     }
 
     .size-legend {
-      margin-top: 20px;
-      padding-top: 20px;
+      margin-top: 24px;
+      padding-top: 24px;
       border-top: 1px solid #e9ecef;
       display: flex;
       flex-wrap: wrap;
-      gap: 16px;
+      gap: 20px;
       justify-content: center;
       align-items: center;
     }
@@ -498,75 +576,84 @@
     .legend-item {
       display: flex;
       align-items: center;
-      gap: 8px;
-      font-size: 12px;
+      gap: 10px;
+      font-size: 14px;
       color: #6c757d;
     }
 
     .legend-dot {
-      width: 12px;
-      height: 12px;
+      width: 14px;
+      height: 14px;
       border-radius: 50%;
-      background: #4CAF50;
+      background: linear-gradient(90deg, #4CAF50, #45a049);
+      box-shadow: 0 2px 4px rgba(76, 175, 80, 0.3);
     }
 
-    .admin-link {
-      margin: 1rem 0;
+    /* Footer */
+    .footer {
+      text-align: center;
+      padding: 30px 20px;
+      color: #6c757d;
+      font-size: 14px;
     }
 
-    .admin-panel-button a {
-      display: inline-block;
-      padding: 0.4rem 1rem;
-      background: #007bff;
-      color: white;
-      border-radius: 5px;
-      font-weight: bold;
-      text-decoration: none;
-      margin-top: 0.5rem;
+    @keyframes submitSuccess {
+      0% { transform: scale(1); }
+      50% { transform: scale(0.95); }
+      100% { transform: scale(1); }
+    }
+
+    .submit-success {
+      animation: submitSuccess 0.3s ease;
     }
 
     @media (max-width: 480px) {
       .form-header h2 {
-        font-size: 22px;
+        font-size: 24px;
       }
 
       .size-buttons {
         grid-template-columns: repeat(3, 1fr);
-        gap: 8px;
+        gap: 10px;
       }
 
       .size-btn {
-        padding: 10px 8px;
-        font-size: 14px;
-      }
-
-      .size-name {
-        min-width: 40px;
-        font-size: 12px;
-      }
-      
-      .bar-container {
-        height: 28px;
-      }
-      
-      .distribution-title {
-        font-size: 18px;
-      }
-
-      th, td {
         padding: 12px 8px;
         font-size: 14px;
       }
 
-      .jersey-number {
-        width: 35px;
-        height: 35px;
+      .size-name {
+        min-width: 45px;
+        font-size: 13px;
+      }
+      
+      .bar-container {
+        height: 32px;
+      }
+      
+      .section-header {
+        font-size: 20px;
+      }
+
+      th, td {
+        padding: 14px 10px;
         font-size: 14px;
       }
 
+      .jersey-number {
+        width: 38px;
+        height: 38px;
+        font-size: 15px;
+      }
+
       .remark-warning {
-        font-size: 11px;
-        padding: 4px 8px;
+        font-size: 12px;
+        padding: 6px 10px;
+      }
+
+      .total-badge {
+        font-size: 14px;
+        padding: 8px 16px;
       }
     }
   </style>
@@ -575,125 +662,138 @@
 
   <!-- Admin link -->
   <div class="admin-link">
-    <a href="#" onclick="revealAdmin()">Admin?</a>
+    <a href="#" onclick="revealAdmin()">管理員?</a>
     <div id="adminLink" style="display:none;" class="admin-panel-button">
-      <a href="admin.html" target="_blank">🔒 Go to Admin Panel</a>
+      <a href="admin.html" target="_blank">🔒 進入管理面板</a>
     </div>
   </div>
 
-  <div class="form-container">
-    <div class="form-header">
-      <h2>豐玉 Gratitude 🏀</h2>
-      <div class="form-subtitle">Jersey Registration System</div>
-    </div>
-    
-    <form id="jerseyForm">
-      <div class="form-group">
-        <label>
-          <span class="label-icon">👤</span>
-          Player Name
-        </label>
-        <input 
-          type="text" 
-          id="playerName" 
-          placeholder="Enter your name"
-          required 
-        />
+  <div class="container">
+    <!-- Form -->
+    <div class="form-container">
+      <div class="form-header">
+        <h2>豐玉 Gratitude 🏀</h2>
+        <div class="form-subtitle">球衣資料登記</div>
       </div>
+      
+      <form id="jerseyForm">
+        <div class="form-group">
+          <label>
+            <span class="label-icon">👤</span>
+            球員姓名
+            <span class="required">*</span>
+          </label>
+          <input 
+            type="text" 
+            id="playerName" 
+            placeholder="請輸入您的姓名"
+            required 
+          />
+        </div>
 
-      <div class="form-group">
-        <label>
-          <span class="label-icon">🔢</span>
-          Jersey Number (00-99)
-        </label>
-        <input
-          type="text"
-          id="jerseyNumber"
-          pattern="^\d{1,2}$"
-          inputmode="numeric"
-          placeholder="Choose your number"
-          required
-        />
-      </div>
+        <div class="form-group">
+          <label>
+            <span class="label-icon">🔢</span>
+            球衣號碼 (00-99)
+            <span class="required">*</span>
+          </label>
+          <input
+            type="text"
+            id="jerseyNumber"
+            pattern="^\d{1,2}$"
+            inputmode="numeric"
+            placeholder="請選擇您的號碼"
+            required
+          />
+        </div>
 
-      <div class="size-selection">
-        <div class="size-selection-header">
-          <div class="size-selection-title">
-            <span class="label-icon">👕</span>
-            Select Your Size
+        <div class="size-selection">
+          <div class="size-selection-header">
+            <div class="size-selection-title">
+              <span class="label-icon">👕</span>
+              選擇尺寸
+              <span class="required">*</span>
+            </div>
+            <div class="size-hint">請選擇一個尺寸</div>
           </div>
-          <div class="size-hint">Choose one</div>
+          <div class="size-buttons" id="sizeButtons">
+            <button type="button" class="size-btn" data-size="3XS"><span>3XS</span></button>
+            <button type="button" class="size-btn" data-size="2XS"><span>2XS</span></button>
+            <button type="button" class="size-btn" data-size="XS"><span>XS</span></button>
+            <button type="button" class="size-btn" data-size="S"><span>S</span></button>
+            <button type="button" class="size-btn" data-size="M"><span>M</span></button>
+            <button type="button" class="size-btn" data-size="L"><span>L</span></button>
+            <button type="button" class="size-btn" data-size="XL"><span>XL</span></button>
+            <button type="button" class="size-btn" data-size="2XL"><span>2XL</span></button>
+            <button type="button" class="size-btn" data-size="3XL"><span>3XL</span></button>
+          </div>
         </div>
-        <div class="size-buttons" id="sizeButtons">
-          <button type="button" class="size-btn" data-size="3XS"><span>3XS</span></button>
-          <button type="button" class="size-btn" data-size="2XS"><span>2XS</span></button>
-          <button type="button" class="size-btn" data-size="XS"><span>XS</span></button>
-          <button type="button" class="size-btn" data-size="S"><span>S</span></button>
-          <button type="button" class="size-btn" data-size="M"><span>M</span></button>
-          <button type="button" class="size-btn" data-size="L"><span>L</span></button>
-          <button type="button" class="size-btn" data-size="XL"><span>XL</span></button>
-          <button type="button" class="size-btn" data-size="2XL"><span>2XL</span></button>
-          <button type="button" class="size-btn" data-size="3XL"><span>3XL</span></button>
+
+        <input type="hidden" id="selectedSize" name="shirtSize" required />
+
+        <button type="submit">提交登記</button>
+      </form>
+    </div>
+
+    <!-- Current selections table -->
+    <div class="section-card">
+      <div class="section-header">
+        <span>📋</span>
+        <span>目前登記狀況</span>
+      </div>
+      <div class="table-container">
+        <table id="selectionTable">
+          <thead>
+            <tr>
+              <th>球員姓名</th>
+              <th>尺寸</th>
+              <th>球衣號碼</th>
+              <th>狀態</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Filled by JS -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Size distribution -->
+    <div class="section-card">
+      <div class="distribution-header">
+        <div class="distribution-title">
+          <span>📊</span>
+          <span>尺寸分布統計</span>
+        </div>
+        <div class="total-badge" id="totalBadge">
+          總計: 0 件
         </div>
       </div>
-
-      <input type="hidden" id="selectedSize" name="shirtSize" required />
-
-      <button type="submit">Submit Registration</button>
-    </form>
-  </div>
-
-  <div class="table-section">
-    <div class="table-header">
-      <span>📋</span>
-      <span>Current Selections</span>
-    </div>
-    <div class="table-container">
-      <table id="selectionTable">
-        <thead>
-          <tr>
-            <th>Player</th>
-            <th>Size</th>
-            <th>Jersey #</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          <!-- Filled by JS -->
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-  <div class="size-distribution" id="sizeDistribution">
-    <div class="distribution-header">
-      <div class="distribution-title">
-        <span>📊</span>
-        <span>尺寸分布</span>
+      <div class="size-chart" id="sizeChart">
+        <!-- Filled by JS -->
       </div>
-      <div class="total-badge" id="totalBadge">
-        總計: 0 件
+      <div class="size-legend">
+        <div class="legend-item">
+          <div class="legend-dot"></div>
+          <span>各尺寸訂購數量分布</span>
+        </div>
       </div>
     </div>
-    <div class="size-chart" id="sizeChart">
-      <!-- Filled by JS -->
-    </div>
-    <div class="size-legend">
-      <div class="legend-item">
-        <div class="legend-dot"></div>
-        <span>每個尺寸的訂購數量</span>
-      </div>
+
+    <!-- Footer -->
+    <div class="footer">
+      <p>© 2025 豐玉感恩盃 | 球衣登記系統</p>
     </div>
   </div>
 
   <!-- Admin reveal -->
   <script>
     function revealAdmin() {
-      const secret = prompt("Enter admin code:");
+      const secret = prompt("請輸入管理員密碼:");
       if (secret === "letmein123") {
         document.getElementById("adminLink").style.display = "block";
       } else {
-        alert("Incorrect code.");
+        alert("密碼錯誤");
       }
     }
   </script>
@@ -744,7 +844,7 @@
       const size = document.getElementById('selectedSize').value;
 
       if (!name || !/^\d{1,2}$/.test(number) || !size) {
-        alert("Please fill all fields with valid input.");
+        alert("請填寫所有必填欄位");
         return;
       }
 
@@ -760,7 +860,7 @@
       setTimeout(() => submitButton.classList.remove('submit-success'), 300);
 
       push(ref(db, 'jerseys'), entry).catch((err) => {
-        alert("❌ Failed to save. Try again.");
+        alert("❌ 儲存失敗，請再試一次");
         console.error(err);
       });
 
