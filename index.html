@@ -249,65 +249,62 @@
     });
 
     onValue(ref(db, 'jerseys'), (snapshot) => {
-      const data = snapshot.val();
-      tableBody.innerHTML = '';
+  const data = snapshot.val();
+  tableBody.innerHTML = '';
 
-      if (!data) return;
+  if (!data) return;
 
-      const entries = Object.entries(data);
+  const entries = Object.entries(data);
 
-      const numberCount = {};
-      const nameCount = {};
+  const numberCount = {};
+  const nameCount = {};
 
-      for (const [id, entry] of entries) {
-        const num = entry.jerseyNumber;
-        const name = entry.name.trim().toLowerCase();
-        numberCount[num] = (numberCount[num] || 0) + 1;
-        nameCount[name] = (nameCount[name] || 0) + 1;
-      }
+  for (const [id, entry] of entries) {
+    const num = entry.jerseyNumber;
+    const name = entry.name.trim().toLowerCase();
+    numberCount[num] = (numberCount[num] || 0) + 1;
+    nameCount[name] = (nameCount[name] || 0) + 1;
+  }
 
-      entries.sort((a, b) => parseInt(a[1].jerseyNumber) - parseInt(b[1].jerseyNumber));
+  entries.sort((a, b) => parseInt(a[1].jerseyNumber) - parseInt(b[1].jerseyNumber));
 
-      for (const [id, entry] of entries) {
-        const row = document.createElement('tr');
+  for (const [id, entry] of entries) {
+    const row = document.createElement('tr');
 
-        const nameCell = document.createElement('td');
-        nameCell.textContent = entry.name;
-        row.appendChild(nameCell);
+    const nameKey = entry.name.trim().toLowerCase();
+    const numKey = entry.jerseyNumber;
+    const nameDup = nameCount[nameKey] > 1;
+    const numDup = numberCount[numKey] > 1;
 
-        const sizeCell = document.createElement('td');
-        sizeCell.textContent = entry.size;
-        row.appendChild(sizeCell);
+    const nameCell = document.createElement('td');
+    nameCell.textContent = entry.name;
+    if (nameDup) nameCell.classList.add('duplicate');
+    row.appendChild(nameCell);
 
-        const numberCell = document.createElement('td');
-        numberCell.textContent = entry.jerseyNumber;
-        row.appendChild(numberCell);
+    const sizeCell = document.createElement('td');
+    sizeCell.textContent = entry.size;
+    row.appendChild(sizeCell);
 
-        const remarksCell = document.createElement('td');
-        const nameKey = entry.name.trim().toLowerCase();
-        const numKey = entry.jerseyNumber;
+    const numberCell = document.createElement('td');
+    numberCell.textContent = entry.jerseyNumber;
+    if (numDup) numberCell.classList.add('duplicate');
+    row.appendChild(numberCell);
 
-        const nameDup = nameCount[nameKey] > 1;
-        const numDup = numberCount[numKey] > 1;
+    const remarksCell = document.createElement('td');
+    if (nameDup && numDup) {
+      remarksCell.textContent = "⚠️ Name & # Duplicated";
+    } else if (nameDup) {
+      remarksCell.textContent = "⚠️ Name Duplicated";
+    } else if (numDup) {
+      remarksCell.textContent = "⚠️ # Duplicated";
+    } else {
+      remarksCell.textContent = "";
+    }
+    row.appendChild(remarksCell);
 
-        if (nameDup && numDup) {
-          remarksCell.textContent = "⚠️ Name & # Duplicated";
-        } else if (nameDup) {
-          remarksCell.textContent = "⚠️ Name Duplicated";
-        } else if (numDup) {
-          remarksCell.textContent = "⚠️ # Duplicated";
-        } else {
-          remarksCell.textContent = "";
-        }
-
-        if (nameDup || numDup) {
-          row.classList.add('duplicate-row');
-        }
-
-        row.appendChild(remarksCell);
-        tableBody.appendChild(row);
-      }
-    });
+    tableBody.appendChild(row);
+  }
+});
   </script>
 </body>
 </html>
