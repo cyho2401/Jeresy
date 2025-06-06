@@ -694,13 +694,13 @@
         <div class="form-group">
           <label>
             <span class="label-icon">🔢</span>
-            球衣號碼 (00-99)
+            球衣號碼 (0-99)
             <span class="required">*</span>
           </label>
           <input
             type="text"
             id="jerseyNumber"
-            pattern="^\d{1,2}$"
+            pattern="^[0-9]{1,2}$"
             inputmode="numeric"
             placeholder="請選擇您的號碼"
             required
@@ -782,7 +782,7 @@
 
     <!-- Footer -->
     <div class="footer">
-      <p>© 2025 豐玉感恩盃 | 球衣登記系統</p>
+      <p>© 2025 豐玉Gratitude🏀 | 球衣登記系統</p>
     </div>
   </div>
 
@@ -843,7 +843,7 @@
       const number = document.getElementById('jerseyNumber').value.trim();
       const size = document.getElementById('selectedSize').value;
 
-      if (!name || !/^\d{1,2}$/.test(number) || !size) {
+      if (!name || !/^[0-9]{1,2}$/.test(number) || !size) {
         alert("請填寫所有必填欄位");
         return;
       }
@@ -924,11 +924,16 @@
         sizeCell.innerHTML = `<span class="size-badge">${entry.size}</span>`;
         row.appendChild(sizeCell);
 
-        // Jersey number cell with circle
+        // Jersey number cell with circle - Fixed here
         const numberCell = document.createElement('td');
         const numberDiv = document.createElement('div');
         numberDiv.className = 'jersey-number';
-        numberDiv.textContent = entry.jerseyNumber.padStart(2, '0');
+        // Only pad if the number is not "0"
+        if (entry.jerseyNumber === "0") {
+          numberDiv.textContent = "0";
+        } else {
+          numberDiv.textContent = entry.jerseyNumber.padStart(2, '0');
+        }
         numberCell.appendChild(numberDiv);
         if (numDup) numberCell.classList.add('duplicate');
         row.appendChild(numberCell);
