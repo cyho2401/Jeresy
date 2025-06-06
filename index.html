@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>豐玉Gratitude 🏀 球衣號碼登記系統</title>
+  <title>豐玉感恩盃 🏀 球衣號碼登記系統</title>
   <style>
     * {
       box-sizing: border-box;
@@ -168,7 +168,7 @@
       margin-left: 4px;
     }
 
-    input[type="text"] {
+    input[type="text"], input[type="number"] {
       padding: 14px 18px;
       border: 2px solid #e9ecef;
       border-radius: 12px;
@@ -177,11 +177,26 @@
       background-color: #f8f9fa;
     }
 
-    input[type="text"]:focus {
+    input[type="text"]:focus, input[type="number"]:focus {
       outline: none;
       border-color: #667eea;
       background-color: white;
       box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+    }
+
+    input.error {
+      border-color: #dc3545;
+    }
+
+    .error-message {
+      color: #dc3545;
+      font-size: 13px;
+      margin-top: 4px;
+      display: none;
+    }
+
+    .error-message.show {
+      display: block;
     }
 
     /* Size selection section */
@@ -700,12 +715,11 @@
           <input
             type="text"
             id="jerseyNumber"
-            pattern="^(0|00|[1-9][0-9]?)$"
             inputmode="numeric"
             placeholder="請選擇您的號碼"
-            title="請輸入 0, 00, 或 1-99 (不接受 01-09)"
             required
           />
+          <span class="error-message" id="jerseyError">請輸入 0, 00, 或 1-99 (不可輸入文字或 01-09)</span>
         </div>
 
         <div class="size-selection">
@@ -791,7 +805,7 @@
   <script>
     function revealAdmin() {
       const secret = prompt("請輸入管理員密碼:");
-      if (secret === "coachchiu") {
+      if (secret === "letmein123") {
         document.getElementById("adminLink").style.display = "block";
       } else {
         alert("密碼錯誤");
@@ -837,15 +851,30 @@
     const totalBadge = document.getElementById('totalBadge');
     const submitButton = form.querySelector('button[type="submit"]');
 
-    // Add custom validation message handler
+    // Enhanced jersey number validation
     const jerseyNumberInput = document.getElementById('jerseyNumber');
-    jerseyNumberInput.addEventListener('invalid', function(e) {
-      e.preventDefault();
-      this.setCustomValidity('請輸入 0, 00, 或 1-99 (不接受 01-09)');
-    });
+    const jerseyError = document.getElementById('jerseyError');
     
+    // Validate jersey number on input
     jerseyNumberInput.addEventListener('input', function() {
-      this.setCustomValidity('');
+      const value = this.value.trim();
+      const validPattern = /^(0|00|[1-9][0-9]?)$/;
+      
+      if (value && !validPattern.test(value)) {
+        this.classList.add('error');
+        jerseyError.classList.add('show');
+      } else {
+        this.classList.remove('error');
+        jerseyError.classList.remove('show');
+      }
+    });
+
+    // Prevent non-numeric input
+    jerseyNumberInput.addEventListener('keypress', function(e) {
+      const char = String.fromCharCode(e.which);
+      if (!/[0-9]/.test(char)) {
+        e.preventDefault();
+      }
     });
 
     form.addEventListener('submit', function (e) {
@@ -855,9 +884,18 @@
       const number = document.getElementById('jerseyNumber').value.trim();
       const size = document.getElementById('selectedSize').value;
 
-      // Updated validation pattern
-      if (!name || !/^(0|00|[1-9][0-9]?)$/.test(number) || !size) {
-        alert("請填寫所有必填欄位，號碼格式必須是 0, 00, 或 1-99");
+      // Validate jersey number format
+      const validPattern = /^(0|00|[1-9][0-9]?)$/;
+      if (!validPattern.test(number)) {
+        jerseyNumberInput.classList.add('error');
+        jerseyError.classList.add('show');
+        jerseyNumberInput.focus();
+        alert("球衣號碼格式錯誤！請輸入 0, 00, 或 1-99");
+        return;
+      }
+
+      if (!name || !number || !size) {
+        alert("請填寫所有必填欄位");
         return;
       }
 
@@ -880,6 +918,8 @@
       form.reset();
       sizeButtons.forEach(btn => btn.classList.remove('selected'));
       hiddenInput.value = '';
+      jerseyNumberInput.classList.remove('error');
+      jerseyError.classList.remove('show');
     });
 
     onValue(ref(db, 'jerseys'), (snapshot) => {
@@ -896,7 +936,7 @@
             </td>
           </tr>
         `;
-        sizeChart.innerHTML = '<div class="empty-state">目前還沒有任何記錄</div>';
+        sizeChart.innerHTML = '<div class="empty-state">目前還沒有任何訂購記錄</div>';
         totalBadge.textContent = '總計: 0 件';
         return;
       }
