@@ -778,7 +778,7 @@
       <div class="distribution-header">
         <div class="distribution-title">
           <span>📊</span>
-          <span>尺寸分布統計</span>
+          <span>尺寸分佈統計</span>
         </div>
         <div class="total-badge" id="totalBadge">
           總計: 0 件
@@ -956,7 +956,22 @@
         sizeCount[size] = (sizeCount[size] || 0) + 1;
       }
 
-      entries.sort((a, b) => parseInt(a[1].jerseyNumber) - parseInt(b[1].jerseyNumber));
+      // Custom sorting: "00" first, then "0", then numeric order
+      entries.sort((a, b) => {
+        const numA = a[1].jerseyNumber;
+        const numB = b[1].jerseyNumber;
+        
+        // "00" comes first
+        if (numA === "00" && numB !== "00") return -1;
+        if (numA !== "00" && numB === "00") return 1;
+        
+        // "0" comes second
+        if (numA === "0" && numB !== "0" && numB !== "00") return -1;
+        if (numA !== "0" && numA !== "00" && numB === "0") return 1;
+        
+        // For all other numbers, sort numerically
+        return parseInt(numA) - parseInt(numB);
+      });
 
       for (const [id, entry] of entries) {
         const row = document.createElement('tr');
