@@ -106,6 +106,32 @@
       transform: translateY(-1px);
     }
 
+    /* Export button styling */
+    .export-btn {
+      background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+    }
+
+    .export-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
+    }
+
+    .export-btn:active {
+      transform: translateY(0);
+    }
+
     /* Admin Login Modal */
     .modal-overlay {
       display: none;
@@ -526,8 +552,14 @@
     .section-header {
       display: flex;
       align-items: center;
-      gap: 12px;
+      justify-content: space-between;
       margin-bottom: 24px;
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
       font-size: 22px;
       font-weight: bold;
       color: #2c3e50;
@@ -835,7 +867,7 @@
         height: 32px;
       }
       
-      .section-header {
+      .section-title {
         font-size: 20px;
       }
 
@@ -870,6 +902,17 @@
         flex-direction: column;
         align-items: flex-start;
         gap: 10px;
+      }
+
+      .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+      }
+
+      .export-btn {
+        width: 100%;
+        justify-content: center;
       }
     }
   </style>
@@ -1000,8 +1043,14 @@
     <!-- Current selections table -->
     <div class="section-card">
       <div class="section-header">
-        <span>📋</span>
-        <span>目前登記狀況</span>
+        <div class="section-title">
+          <span>📋</span>
+          <span>目前登記狀況</span>
+        </div>
+        <button class="export-btn" onclick="exportToExcel()">
+          <span>📥</span>
+          <span>匯出 Excel</span>
+        </button>
       </div>
       <div class="table-container">
         <table id="selectionTable">
@@ -1048,6 +1097,9 @@
     </div>
   </div>
 
+  <!-- SheetJS library for Excel export -->
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
+
   <!-- Size button selection -->
   <script>
     const sizeButtons = document.querySelectorAll('.size-btn');
@@ -1091,6 +1143,8 @@
     window.showAdminLogin = showAdminLogin;
     window.closeAdminLogin = closeAdminLogin;
     window.logout = logout;
+    window.currentData = []; // Store current data for export
+    window.sizeDistribution = {}; // Store size distribution
 
     // Auth state observer
     onAuthStateChanged(auth, (user) => {
@@ -1281,6 +1335,8 @@
       const data = snapshot.val();
       tableBody.innerHTML = '';
       sizeChart.innerHTML = '';
+      window.currentData = []; // Reset current data
+      window.sizeDistribution = {}; // Reset size distribution
 
       if (!data) {
         tableBody.innerHTML = `
@@ -1336,6 +1392,19 @@
         const nameDup = nameCount[nameKey] > 1;
         const numDup = numberCount[numKey] > 1;
 
+        // Prepare data for export
+        const statusText = [];
+        if (nameDup) statusText.push('姓名重複');
+        if (numDup) statusText.push('號碼重複');
+        
+        const exportRowData = {
+          '球員姓名': entry.name,
+          '尺寸': entry.size,
+          '球衣號碼': entry.jerseyNumber,
+          '狀態': statusText.length > 0 ? statusText.join('、') : '正常'
+        };
+        window.currentData.push(exportRowData);
+
         // Player name cell
         const nameCell = document.createElement('td');
         nameCell.textContent = entry.name;
@@ -1380,6 +1449,7 @@
       allSizes.forEach(size => {
         const count = sizeCount[size] || 0;
         totalPlayers += count;
+        window.sizeDistribution[size] = count;
         
         if (count > 0) {
           const percentage = Math.round((count / entries.length) * 100);
@@ -1404,6 +1474,53 @@
 
       totalBadge.textContent = `總計: ${totalPlayers} 件`;
     });
+  </script>
+
+  <!-- Excel export function -->
+  <script>
+    function exportToExcel() {
+      if (!window.currentData || window.currentData.length === 0) {
+        alert('沒有資料可以匯出！');
+        return;
+      }
+
+      // Create a new workbook
+      const wb = XLSX.utils.book_new();
+      
+      // Create summary sheet
+      const summaryData = [
+        ['豐玉 Gratitude 球衣登記報表'],
+        [''],
+        ['匯出日期', new Date().toLocaleString('zh-TW')],
+        ['總登記數量', window.currentData.length],
+        [''],
+        ['尺寸分佈統計'],
+      ];
+
+      // Add size distribution to summary
+      const allSizes = ['3XS', '2XS', 'XS', 'S', 'M', 'L', 'XL', '2XL', '3XL'];
+      allSizes.forEach(size => {
+        const count = window.sizeDistribution[size] || 0;
+        if (count > 0) {
+          summaryData.push([size, count, `${Math.round((count / window.currentData.length) * 100)}%`]);
+        }
+      });
+
+      const summarySheet = XLSX.utils.aoa_to_sheet(summaryData);
+      XLSX.utils.book_append_sheet(wb, summarySheet, "統計摘要");
+      
+      // Create detail sheet
+      const ws = XLSX.utils.json_to_sheet(window.currentData);
+      XLSX.utils.book_append_sheet(wb, ws, "球衣登記清單");
+      
+      // Generate filename with current date
+      const date = new Date();
+      const dateStr = `${date.getFullYear()}${(date.getMonth() + 1).toString().padStart(2, '0')}${date.getDate().toString().padStart(2, '0')}`;
+      const filename = `豐玉球衣登記_${dateStr}.xlsx`;
+      
+      // Save the file
+      XLSX.writeFile(wb, filename);
+    }
   </script>
 </body>
 </html>
