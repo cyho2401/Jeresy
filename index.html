@@ -56,29 +56,218 @@
       font-size: 14px;
       opacity: 0.6;
       transition: opacity 0.3s ease;
+      cursor: pointer;
     }
 
     .admin-link > a:hover {
       opacity: 1;
     }
 
-    .admin-panel-button a {
-      display: inline-block;
-      padding: 8px 16px;
+    .admin-logged-in {
+      display: none;
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      border-radius: 8px;
-      font-weight: bold;
-      text-decoration: none;
-      margin-top: 8px;
-      font-size: 14px;
+      padding: 10px 20px;
+      border-radius: 20px;
       box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    }
+
+    .admin-info {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      color: white;
+      font-size: 14px;
+    }
+
+    .admin-email {
+      font-weight: 500;
+    }
+
+    .admin-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .admin-btn {
+      padding: 6px 14px;
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 8px;
+      font-size: 13px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      display: inline-block;
+    }
+
+    .admin-btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: translateY(-1px);
+    }
+
+    /* Admin Login Modal */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 1000;
+      backdrop-filter: blur(5px);
+    }
+
+    .modal-overlay.show {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .login-modal {
+      background: white;
+      border-radius: 20px;
+      padding: 0;
+      width: 90%;
+      max-width: 400px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      overflow: hidden;
+      transform: translateY(20px);
+      opacity: 0;
+      animation: modalAppear 0.3s ease forwards;
+    }
+
+    @keyframes modalAppear {
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .modal-header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 30px;
+      text-align: center;
+      color: white;
+    }
+
+    .modal-header h3 {
+      margin: 0;
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    .modal-body {
+      padding: 30px;
+    }
+
+    .login-form {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .form-field {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .form-label {
+      font-size: 14px;
+      font-weight: 500;
+      color: #344054;
+    }
+
+    .login-input {
+      padding: 14px 18px;
+      border: 2px solid #e9ecef;
+      border-radius: 12px;
+      font-size: 16px;
+      transition: all 0.3s ease;
+      background-color: #f8f9fa;
+    }
+
+    .login-input:focus {
+      outline: none;
+      border-color: #667eea;
+      background-color: white;
+      box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+    }
+
+    .login-error {
+      color: #dc3545;
+      font-size: 14px;
+      text-align: center;
+      display: none;
+      background: #fee;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #fcc;
+    }
+
+    .login-error.show {
+      display: block;
+    }
+
+    .login-buttons {
+      display: flex;
+      gap: 12px;
+      margin-top: 10px;
+    }
+
+    .login-btn {
+      flex: 1;
+      padding: 14px;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
       transition: all 0.3s ease;
     }
 
-    .admin-panel-button a:hover {
+    .login-btn.primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    }
+
+    .login-btn.primary:hover:not(:disabled) {
       transform: translateY(-2px);
       box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+    }
+
+    .login-btn.primary:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .login-btn.secondary {
+      background: #f8f9fa;
+      color: #6c757d;
+      border: 2px solid #e9ecef;
+    }
+
+    .login-btn.secondary:hover {
+      background: #e9ecef;
+    }
+
+    .loading-spinner {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: white;
+      animation: spin 0.8s linear infinite;
+      margin-right: 8px;
+      vertical-align: middle;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
     }
 
     /* Form container */
@@ -670,6 +859,18 @@
         font-size: 14px;
         padding: 8px 16px;
       }
+
+      .admin-logged-in {
+        position: static;
+        margin-bottom: 20px;
+        border-radius: 16px;
+      }
+
+      .admin-info {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+      }
     }
   </style>
 </head>
@@ -677,9 +878,55 @@
 
   <!-- Admin link -->
   <div class="admin-link">
-    <a href="#" onclick="revealAdmin()">管理員?</a>
-    <div id="adminLink" style="display:none;" class="admin-panel-button">
-      <a href="admin.html" target="_blank">🔒 進入管理面板</a>
+    <a onclick="showAdminLogin()" id="adminLoginLink">管理員登入</a>
+    <div class="admin-logged-in" id="adminLoggedIn">
+      <div class="admin-info">
+        <span class="admin-email" id="adminEmail"></span>
+        <div class="admin-actions">
+          <a href="admin.html" class="admin-btn" target="_blank">管理面板</a>
+          <button class="admin-btn" onclick="logout()">登出</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Admin Login Modal -->
+  <div class="modal-overlay" id="adminModal">
+    <div class="login-modal">
+      <div class="modal-header">
+        <h3>管理員登入</h3>
+      </div>
+      <div class="modal-body">
+        <form class="login-form" id="adminLoginForm">
+          <div class="form-field">
+            <label class="form-label">Email</label>
+            <input 
+              type="email" 
+              class="login-input" 
+              id="adminEmail" 
+              placeholder="admin@example.com"
+              required
+            />
+          </div>
+          <div class="form-field">
+            <label class="form-label">密碼</label>
+            <input 
+              type="password" 
+              class="login-input" 
+              id="adminPassword" 
+              placeholder="請輸入密碼"
+              required
+            />
+          </div>
+          <div class="login-error" id="loginError">登入失敗：<span id="errorMessage"></span></div>
+          <div class="login-buttons">
+            <button type="submit" class="login-btn primary" id="loginSubmitBtn">
+              <span id="loginBtnText">登入</span>
+            </button>
+            <button type="button" class="login-btn secondary" onclick="closeAdminLogin()">取消</button>
+          </div>
+        </form>
+      </div>
     </div>
   </div>
 
@@ -801,18 +1048,6 @@
     </div>
   </div>
 
-  <!-- Admin reveal -->
-  <script>
-    function revealAdmin() {
-      const secret = prompt("請輸入管理員密碼:");
-      if (secret === "coachchiu") {
-        document.getElementById("adminLink").style.display = "block";
-      } else {
-        alert("密碼錯誤");
-      }
-    }
-  </script>
-
   <!-- Size button selection -->
   <script>
     const sizeButtons = document.querySelectorAll('.size-btn');
@@ -831,6 +1066,12 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+    import { 
+      getAuth, 
+      signInWithEmailAndPassword, 
+      onAuthStateChanged, 
+      signOut 
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyCGCaWivohAhxZDkKp7YGNp9deNetR3K4Y",
@@ -844,7 +1085,115 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
+    const auth = getAuth(app);
 
+    // Make functions available globally
+    window.showAdminLogin = showAdminLogin;
+    window.closeAdminLogin = closeAdminLogin;
+    window.logout = logout;
+
+    // Auth state observer
+    onAuthStateChanged(auth, (user) => {
+      const adminLoginLink = document.getElementById('adminLoginLink');
+      const adminLoggedIn = document.getElementById('adminLoggedIn');
+      const adminEmailSpan = document.getElementById('adminEmail');
+      
+      if (user) {
+        // User is signed in
+        adminLoginLink.style.display = 'none';
+        adminLoggedIn.style.display = 'block';
+        adminEmailSpan.textContent = user.email;
+      } else {
+        // User is signed out
+        adminLoginLink.style.display = 'block';
+        adminLoggedIn.style.display = 'none';
+      }
+    });
+
+    // Admin login functions
+    function showAdminLogin() {
+      document.getElementById('adminModal').classList.add('show');
+      document.getElementById('adminEmail').focus();
+    }
+
+    function closeAdminLogin() {
+      document.getElementById('adminModal').classList.remove('show');
+      document.getElementById('adminLoginForm').reset();
+      document.getElementById('loginError').classList.remove('show');
+    }
+
+    async function logout() {
+      try {
+        await signOut(auth);
+        alert('已成功登出');
+      } catch (error) {
+        console.error('登出錯誤:', error);
+        alert('登出失敗，請重試');
+      }
+    }
+
+    // Admin login form handler
+    document.getElementById('adminLoginForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const email = document.getElementById('adminEmail').value;
+      const password = document.getElementById('adminPassword').value;
+      const loginBtn = document.getElementById('loginSubmitBtn');
+      const loginBtnText = document.getElementById('loginBtnText');
+      const loginError = document.getElementById('loginError');
+      const errorMessage = document.getElementById('errorMessage');
+      
+      // Show loading state
+      loginBtn.disabled = true;
+      loginBtnText.innerHTML = '<span class="loading-spinner"></span>登入中...';
+      loginError.classList.remove('show');
+      
+      try {
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        closeAdminLogin();
+      } catch (error) {
+        let errorText = '登入失敗';
+        
+        switch (error.code) {
+          case 'auth/invalid-email':
+            errorText = 'Email 格式錯誤';
+            break;
+          case 'auth/user-disabled':
+            errorText = '此帳號已被停用';
+            break;
+          case 'auth/user-not-found':
+            errorText = '找不到此使用者';
+            break;
+          case 'auth/wrong-password':
+            errorText = '密碼錯誤';
+            break;
+          case 'auth/invalid-credential':
+            errorText = 'Email 或密碼錯誤';
+            break;
+          case 'auth/too-many-requests':
+            errorText = '登入嘗試次數過多，請稍後再試';
+            break;
+          default:
+            errorText = error.message;
+        }
+        
+        errorMessage.textContent = errorText;
+        loginError.classList.add('show');
+      } finally {
+        // Reset button state
+        loginBtn.disabled = false;
+        loginBtnText.textContent = '登入';
+      }
+    });
+
+    // Click outside to close modal
+    document.getElementById('adminModal').addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeAdminLogin();
+      }
+    });
+
+    // Jersey form handling
     const form = document.getElementById('jerseyForm');
     const tableBody = document.querySelector('#selectionTable tbody');
     const sizeChart = document.getElementById('sizeChart');
@@ -916,8 +1265,8 @@
       });
 
       form.reset();
-      sizeButtons.forEach(btn => btn.classList.remove('selected'));
-      hiddenInput.value = '';
+      document.querySelectorAll('.size-btn').forEach(btn => btn.classList.remove('selected'));
+      document.getElementById('selectedSize').value = '';
       jerseyNumberInput.classList.remove('error');
       jerseyError.classList.remove('show');
     });
