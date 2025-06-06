@@ -91,17 +91,83 @@
       font-weight: bold;
     }
 
-    .counts {
-      margin-top: 1rem;
-      background: #eef5ff;
-      padding: 1rem;
-      border-radius: 6px;
-      font-size: 0.95rem;
+    /* Improved size counts design */
+    .counts-container {
+      margin-top: 2rem;
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.08);
     }
 
-    .counts strong {
-      display: inline-block;
-      min-width: 40px;
+    .counts-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 16px;
+      font-size: 18px;
+      font-weight: bold;
+      color: #333;
+    }
+
+    .counts-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+      gap: 12px;
+    }
+
+    .size-count-item {
+      background: #f8f9fa;
+      border: 2px solid #e9ecef;
+      border-radius: 12px;
+      padding: 12px;
+      text-align: center;
+      transition: all 0.2s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .size-count-item:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      border-color: #4CAF50;
+    }
+
+    .size-label {
+      font-size: 20px;
+      font-weight: bold;
+      color: #495057;
+      margin-bottom: 4px;
+    }
+
+    .size-count {
+      font-size: 24px;
+      font-weight: bold;
+      color: #4CAF50;
+    }
+
+    .size-count-bar {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: #4CAF50;
+      transition: height 0.3s ease;
+    }
+
+    .total-count {
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 2px solid #e9ecef;
+      text-align: center;
+      font-size: 16px;
+      color: #6c757d;
+    }
+
+    .total-count strong {
+      color: #333;
+      font-size: 20px;
     }
 
     .admin-link {
@@ -117,6 +183,20 @@
       font-weight: bold;
       text-decoration: none;
       margin-top: 0.5rem;
+    }
+
+    @media (max-width: 480px) {
+      .counts-grid {
+        grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+      }
+      
+      .size-label {
+        font-size: 16px;
+      }
+      
+      .size-count {
+        font-size: 20px;
+      }
     }
   </style>
 </head>
@@ -182,7 +262,18 @@
     </tbody>
   </table>
 
-  <div id="sizeCounts" class="counts"></div>
+  <div id="sizeCounts" class="counts-container">
+    <div class="counts-header">
+      <span>📊</span>
+      <span>Size Distribution</span>
+    </div>
+    <div class="counts-grid" id="sizeCountsGrid">
+      <!-- Filled by JS -->
+    </div>
+    <div class="total-count" id="totalCount">
+      <!-- Filled by JS -->
+    </div>
+  </div>
 
   <!-- Admin reveal -->
   <script>
@@ -230,7 +321,8 @@
 
     const form = document.getElementById('jerseyForm');
     const tableBody = document.querySelector('#selectionTable tbody');
-    const sizeCountsDiv = document.getElementById('sizeCounts');
+    const sizeCountsGrid = document.getElementById('sizeCountsGrid');
+    const totalCountDiv = document.getElementById('totalCount');
 
     form.addEventListener('submit', function (e) {
       e.preventDefault();
@@ -264,9 +356,13 @@
     onValue(ref(db, 'jerseys'), (snapshot) => {
       const data = snapshot.val();
       tableBody.innerHTML = '';
-      sizeCountsDiv.innerHTML = '';
+      sizeCountsGrid.innerHTML = '';
+      totalCountDiv.innerHTML = '';
 
-      if (!data) return;
+      if (!data) {
+        totalCountDiv.innerHTML = 'Total Players: <strong>0</strong>';
+        return;
+      }
 
       const entries = Object.entries(data);
       const numberCount = {};
@@ -322,13 +418,30 @@
         tableBody.appendChild(row);
       }
 
-      // Display counts by size
-      const sortedSizes = Object.keys(sizeCount).sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
-      let countHTML = `<strong>Size Counts:</strong><br>`;
-      for (const size of sortedSizes) {
-        countHTML += `<strong>${size}</strong>: ${sizeCount[size]}<br>`;
-      }
-      sizeCountsDiv.innerHTML = countHTML;
+      // Display improved size counts
+      const allSizes = ['3XS', '2XS', 'XS', 'S', 'M', 'L', 'XL', '2XL', '3XL'];
+      const maxCount = Math.max(...Object.values(sizeCount), 1);
+      let totalPlayers = 0;
+
+      allSizes.forEach(size => {
+        const count = sizeCount[size] || 0;
+        totalPlayers += count;
+        
+        const sizeItem = document.createElement('div');
+        sizeItem.className = 'size-count-item';
+        
+        const barHeight = count > 0 ? (count / maxCount) * 20 : 0;
+        
+        sizeItem.innerHTML = `
+          <div class="size-label">${size}</div>
+          <div class="size-count">${count}</div>
+          <div class="size-count-bar" style="height: ${barHeight}px;"></div>
+        `;
+        
+        sizeCountsGrid.appendChild(sizeItem);
+      });
+
+      totalCountDiv.innerHTML = `Total Players: <strong>${totalPlayers}</strong>`;
     });
   </script>
 </body>
