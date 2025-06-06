@@ -43,11 +43,36 @@
       font-size: 0.9rem;
       cursor: pointer;
     }
+
+    .header-section {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    #exportBtn {
+      background-color: #28a745;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      font-size: 1rem;
+    }
+
+    #exportBtn:hover {
+      background-color: #218838;
+    }
   </style>
 </head>
 <body>
 
-  <h2>📊 Admin - Jersey Selections</h2>
+  <div class="header-section">
+    <h2>📊 Admin - Jersey Selections</h2>
+    <button id="exportBtn">📥 Export to Excel</button>
+  </div>
 
   <table id="adminTable">
     <thead>
@@ -64,6 +89,9 @@
       <!-- Data will go here -->
     </tbody>
   </table>
+
+  <!-- SheetJS library for Excel export -->
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -88,10 +116,12 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
     const tableBody = document.querySelector('#adminTable tbody');
+    let currentData = []; // Store current data for export
 
     onValue(ref(db, 'jerseys'), (snapshot) => {
       const data = snapshot.val();
       tableBody.innerHTML = '';
+      currentData = []; // Reset current data
 
       if (!data) return;
 
@@ -109,6 +139,15 @@
 
       for (const [id, entry] of entries) {
         const row = document.createElement('tr');
+
+        // Prepare data for export
+        const exportRowData = {
+          Player: entry.name,
+          Size: entry.size,
+          'Jersey #': entry.jerseyNumber,
+          Remarks: countMap[entry.jerseyNumber] > 1 ? 'Duplicated' : '',
+          'Submitted At': ''
+        };
 
         // Editable Player
         const nameCell = document.createElement('td');
@@ -156,7 +195,9 @@
         hours = hours % 12 || 12;
         const timeFormatted = `${hours}:${minutes}${ampm}`;
         const dateFormatted = `${date.getDate()}/${date.getMonth() + 1}`;
-        timeCell.textContent = `${dateFormatted} ${timeFormatted}`;
+        const fullDateTime = `${dateFormatted} ${timeFormatted}`;
+        timeCell.textContent = fullDateTime;
+        exportRowData['Submitted At'] = fullDateTime;
         row.appendChild(timeCell);
 
         // Delete Button
@@ -172,7 +213,33 @@
         row.appendChild(deleteCell);
 
         tableBody.appendChild(row);
+        currentData.push(exportRowData);
       }
+    });
+
+    // Export to Excel functionality
+    document.getElementById('exportBtn').addEventListener('click', () => {
+      if (currentData.length === 0) {
+        alert('No data to export!');
+        return;
+      }
+
+      // Create a new workbook
+      const wb = XLSX.utils.book_new();
+      
+      // Convert data to worksheet
+      const ws = XLSX.utils.json_to_sheet(currentData);
+      
+      // Add worksheet to workbook
+      XLSX.utils.book_append_sheet(wb, ws, "Jersey Selections");
+      
+      // Generate filename with current date
+      const date = new Date();
+      const dateStr = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
+      const filename = `jersey_selections_${dateStr}.xlsx`;
+      
+      // Save the file
+      XLSX.writeFile(wb, filename);
     });
   </script>
 </body>
