@@ -700,9 +700,10 @@
           <input
             type="text"
             id="jerseyNumber"
-            pattern="^[0-9]{1,2}$"
+            pattern="^(0|00|[1-9][0-9]?)$"
             inputmode="numeric"
             placeholder="請選擇您的號碼"
+            title="請輸入 0, 00, 或 1-99 (不接受 01-09)"
             required
           />
         </div>
@@ -790,7 +791,7 @@
   <script>
     function revealAdmin() {
       const secret = prompt("請輸入管理員密碼:");
-      if (secret === "letmein123") {
+      if (secret === "coachchiu") {
         document.getElementById("adminLink").style.display = "block";
       } else {
         alert("密碼錯誤");
@@ -836,6 +837,17 @@
     const totalBadge = document.getElementById('totalBadge');
     const submitButton = form.querySelector('button[type="submit"]');
 
+    // Add custom validation message handler
+    const jerseyNumberInput = document.getElementById('jerseyNumber');
+    jerseyNumberInput.addEventListener('invalid', function(e) {
+      e.preventDefault();
+      this.setCustomValidity('請輸入 0, 00, 或 1-99 (不接受 01-09)');
+    });
+    
+    jerseyNumberInput.addEventListener('input', function() {
+      this.setCustomValidity('');
+    });
+
     form.addEventListener('submit', function (e) {
       e.preventDefault();
 
@@ -843,8 +855,9 @@
       const number = document.getElementById('jerseyNumber').value.trim();
       const size = document.getElementById('selectedSize').value;
 
-      if (!name || !/^[0-9]{1,2}$/.test(number) || !size) {
-        alert("請填寫所有必填欄位");
+      // Updated validation pattern
+      if (!name || !/^(0|00|[1-9][0-9]?)$/.test(number) || !size) {
+        alert("請填寫所有必填欄位，號碼格式必須是 0, 00, 或 1-99");
         return;
       }
 
@@ -883,7 +896,7 @@
             </td>
           </tr>
         `;
-        sizeChart.innerHTML = '<div class="empty-state">目前還沒有任何訂購記錄</div>';
+        sizeChart.innerHTML = '<div class="empty-state">目前還沒有任何記錄</div>';
         totalBadge.textContent = '總計: 0 件';
         return;
       }
@@ -924,16 +937,11 @@
         sizeCell.innerHTML = `<span class="size-badge">${entry.size}</span>`;
         row.appendChild(sizeCell);
 
-        // Jersey number cell with circle - Fixed here
+        // Jersey number cell with circle - Display as entered
         const numberCell = document.createElement('td');
         const numberDiv = document.createElement('div');
         numberDiv.className = 'jersey-number';
-        // Only pad if the number is not "0"
-        if (entry.jerseyNumber === "0") {
-          numberDiv.textContent = "0";
-        } else {
-          numberDiv.textContent = entry.jerseyNumber.padStart(2, '0');
-        }
+        numberDiv.textContent = entry.jerseyNumber;
         numberCell.appendChild(numberDiv);
         if (numDup) numberCell.classList.add('duplicate');
         row.appendChild(numberCell);
