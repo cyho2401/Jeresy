@@ -903,7 +903,7 @@
             <input 
               type="email" 
               class="login-input" 
-              id="adminEmail" 
+              id="adminEmailInput"
               placeholder="admin@example.com"
               required
             />
@@ -913,7 +913,7 @@
             <input 
               type="password" 
               class="login-input" 
-              id="adminPassword" 
+              id="adminPasswordInput"
               placeholder="請輸入密碼"
               required
             />
@@ -1113,13 +1113,16 @@
     // Admin login functions
     function showAdminLogin() {
       document.getElementById('adminModal').classList.add('show');
-      document.getElementById('adminEmail').focus();
+      document.getElementById('adminEmailInput').focus();
     }
 
     function closeAdminLogin() {
       document.getElementById('adminModal').classList.remove('show');
       document.getElementById('adminLoginForm').reset();
       document.getElementById('loginError').classList.remove('show');
+      // Clear input fields
+      document.getElementById('adminEmailInput').value = '';
+      document.getElementById('adminPasswordInput').value = '';
     }
 
     async function logout() {
@@ -1136,8 +1139,8 @@
     document.getElementById('adminLoginForm').addEventListener('submit', async function(e) {
       e.preventDefault();
       
-      const email = document.getElementById('adminEmail').value;
-      const password = document.getElementById('adminPassword').value;
+      const email = document.getElementById('adminEmailInput').value;
+      const password = document.getElementById('adminPasswordInput').value;
       const loginBtn = document.getElementById('loginSubmitBtn');
       const loginBtnText = document.getElementById('loginBtnText');
       const loginError = document.getElementById('loginError');
@@ -1172,6 +1175,9 @@
             break;
           case 'auth/too-many-requests':
             errorText = '登入嘗試次數過多，請稍後再試';
+            break;
+          case 'auth/missing-email':
+            errorText = '請輸入 Email';
             break;
           default:
             errorText = error.message;
