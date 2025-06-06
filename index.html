@@ -86,12 +86,22 @@
     }
 
     .duplicate {
-      color: red;
+      background-color: #fff3f3;
       font-weight: bold;
+      color: #d00;
     }
 
-    .duplicate-row {
-      background-color: #fff3f3;
+    .counts {
+      margin-top: 1rem;
+      background: #eef5ff;
+      padding: 1rem;
+      border-radius: 6px;
+      font-size: 0.95rem;
+    }
+
+    .counts strong {
+      display: inline-block;
+      min-width: 40px;
     }
 
     .admin-link {
@@ -172,6 +182,8 @@
     </tbody>
   </table>
 
+  <div id="sizeCounts" class="counts"></div>
+
   <!-- Admin reveal -->
   <script>
     function revealAdmin() {
@@ -184,7 +196,7 @@
     }
   </script>
 
-  <!-- Size selection logic -->
+  <!-- Size button selection -->
   <script>
     const sizeButtons = document.querySelectorAll('.size-btn');
     const hiddenInput = document.getElementById('selectedSize');
@@ -198,7 +210,7 @@
     });
   </script>
 
-  <!-- Firebase + Logic -->
+  <!-- Firebase & Logic -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
@@ -218,6 +230,7 @@
 
     const form = document.getElementById('jerseyForm');
     const tableBody = document.querySelector('#selectionTable tbody');
+    const sizeCountsDiv = document.getElementById('sizeCounts');
 
     form.addEventListener('submit', function (e) {
       e.preventDefault();
@@ -249,62 +262,74 @@
     });
 
     onValue(ref(db, 'jerseys'), (snapshot) => {
-  const data = snapshot.val();
-  tableBody.innerHTML = '';
+      const data = snapshot.val();
+      tableBody.innerHTML = '';
+      sizeCountsDiv.innerHTML = '';
 
-  if (!data) return;
+      if (!data) return;
 
-  const entries = Object.entries(data);
+      const entries = Object.entries(data);
+      const numberCount = {};
+      const nameCount = {};
+      const sizeCount = {};
 
-  const numberCount = {};
-  const nameCount = {};
+      for (const [id, entry] of entries) {
+        const num = entry.jerseyNumber;
+        const name = entry.name.trim().toLowerCase();
+        const size = entry.size;
 
-  for (const [id, entry] of entries) {
-    const num = entry.jerseyNumber;
-    const name = entry.name.trim().toLowerCase();
-    numberCount[num] = (numberCount[num] || 0) + 1;
-    nameCount[name] = (nameCount[name] || 0) + 1;
-  }
+        numberCount[num] = (numberCount[num] || 0) + 1;
+        nameCount[name] = (nameCount[name] || 0) + 1;
+        sizeCount[size] = (sizeCount[size] || 0) + 1;
+      }
 
-  entries.sort((a, b) => parseInt(a[1].jerseyNumber) - parseInt(b[1].jerseyNumber));
+      entries.sort((a, b) => parseInt(a[1].jerseyNumber) - parseInt(b[1].jerseyNumber));
 
-  for (const [id, entry] of entries) {
-    const row = document.createElement('tr');
+      for (const [id, entry] of entries) {
+        const row = document.createElement('tr');
 
-    const nameKey = entry.name.trim().toLowerCase();
-    const numKey = entry.jerseyNumber;
-    const nameDup = nameCount[nameKey] > 1;
-    const numDup = numberCount[numKey] > 1;
+        const nameKey = entry.name.trim().toLowerCase();
+        const numKey = entry.jerseyNumber;
+        const nameDup = nameCount[nameKey] > 1;
+        const numDup = numberCount[numKey] > 1;
 
-    const nameCell = document.createElement('td');
-    nameCell.textContent = entry.name;
-    if (nameDup) nameCell.classList.add('duplicate');
-    row.appendChild(nameCell);
+        const nameCell = document.createElement('td');
+        nameCell.textContent = entry.name;
+        if (nameDup) nameCell.classList.add('duplicate');
+        row.appendChild(nameCell);
 
-    const sizeCell = document.createElement('td');
-    sizeCell.textContent = entry.size;
-    row.appendChild(sizeCell);
+        const sizeCell = document.createElement('td');
+        sizeCell.textContent = entry.size;
+        row.appendChild(sizeCell);
 
-    const numberCell = document.createElement('td');
-    numberCell.textContent = entry.jerseyNumber;
-    if (numDup) numberCell.classList.add('duplicate');
-    row.appendChild(numberCell);
+        const numberCell = document.createElement('td');
+        numberCell.textContent = entry.jerseyNumber;
+        if (numDup) numberCell.classList.add('duplicate');
+        row.appendChild(numberCell);
 
-    const remarksCell = document.createElement('td');
-    if (nameDup && numDup) {
-      remarksCell.textContent = "⚠️ Name & # Duplicated";
-    } else if (nameDup) {
-      remarksCell.textContent = "⚠️ Name Duplicated";
-    } else if (numDup) {
-      remarksCell.textContent = "⚠️ # Duplicated";
-    } else {
-      remarksCell.textContent = "";
-    }
-    row.appendChild(remarksCell);
+        const remarksCell = document.createElement('td');
+        if (nameDup && numDup) {
+          remarksCell.textContent = "⚠️ Name & # Duplicated";
+        } else if (nameDup) {
+          remarksCell.textContent = "⚠️ Name Duplicated";
+        } else if (numDup) {
+          remarksCell.textContent = "⚠️ # Duplicated";
+        } else {
+          remarksCell.textContent = "";
+        }
+        row.appendChild(remarksCell);
 
-    tableBody.appendChild(row);
-  }
-});
+        tableBody.appendChild(row);
+      }
+
+      // Display counts by size
+      const sortedSizes = Object.keys(sizeCount).sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+      let countHTML = `<strong>Size Counts:</strong><br>`;
+      for (const size of sortedSizes) {
+        countHTML += `<strong>${size}</strong>: ${sizeCount[size]}<br>`;
+      }
+      sizeCountsDiv.innerHTML = countHTML;
+    });
   </script>
 </body>
 </html>
